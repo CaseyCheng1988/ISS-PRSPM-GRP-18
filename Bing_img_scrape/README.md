@@ -12,4 +12,3 @@
    - python bing.py -k "835f2c6d22ff41518938455c80a7862b" -q "watermelon" -t 1000 
 8. A log file and a subfolder containing the images will be generated as output.
 9. The total number of saved images will be slightly more than the total number specified in the command as the final API call will generate extra images.
-
