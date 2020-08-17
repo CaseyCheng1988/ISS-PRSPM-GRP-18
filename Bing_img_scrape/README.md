@@ -7,7 +7,7 @@
 5. The following python libraries need to be installed:
    - requests, time, os, argparse, datetime, matplotlib, PIL, io and numpy
 6. In your command window, run 
-   - python bing.py -k "<Your API key>" -q "<Search term>" -t <number of images required> -r <optional: number of images per API call, by default 150> -i <optional: starting index of image, by default 1>
+   - python bing.py -k "**Your API key**" -q "**Your search term**" -t **number of images required** -r **optional: number of images per API call, by default 150** -i **optional: starting index of image, by default 1**
 7. Example:
    - python bing.py -k "835f2c6d22ff41518938455c80a7862b" -q "watermelon" -t 1000 
 8. A log file and a subfolder containing the images will be generated as output.
