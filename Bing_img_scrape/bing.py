@@ -10,6 +10,8 @@ import numpy as np
 ############### ARGUMENT PARSER ######################
 ######################################################
 ap = argparse.ArgumentParser()
+ap.add_argument("-k", "--key", required=True,
+                help='API keys of Image Search API')
 ap.add_argument("-q", "--query", required=True,
                help='search term for Bing Image API')
 ap.add_argument("-t", "--total", type=int, required=True,
@@ -24,7 +26,7 @@ args = vars(ap.parse_args())
 ##################### VARIABLES ######################
 ######################################################
 
-SUBSCRIPTION_KEY = "835f2c6d22ff41518938455c80a6662b"
+SUBSCRIPTION_KEY = args['key']
 SEARCH_URL = "https://api.cognitive.microsoft.com/bing/v7.0/images/search"
 SEARCH_TERM = args['query'] # specify search term here
 IMG_PER_RESPONSE = args['response'] # number of images to return in one response, maximum 150
