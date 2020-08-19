@@ -43,8 +43,8 @@ def imageDownload(X,Y,URL,Object):
         pg.hotkey('ctrl','c')#copy the browser link
         if pyperclip.paste()!=URL:#check if browser link not the same with URL then close it
             pg.hotkey('ctrl','w')
-    else:
-        pyperclip.copy(Object)
+    else:#downloader
+        pyperclip.copy(Object+'.jpg')
         time.sleep(1)
         pg.hotkey('ctrl','v')#rename the file with respective object and line location
         time.sleep(1)
