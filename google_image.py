@@ -33,17 +33,17 @@ def imageDownload(X,Y,Object):
     time.sleep(1)
     Nkey(3,'up')
     time.sleep(1)
-    pg.hotkey('enter')#enter to execute download
+    pg.hotkey('enter')#enter to copy image address
     time.sleep(3)
-    pg.hotkey('ctrl','c')
+    pg.hotkey('ctrl','c')#in case it is not image address, it will copy its string
     time.sleep(2)
     pg.hotkey('esc')
     time.sleep(1)
     
     
-    if len(pyperclip.paste())>100:
+    if len(pyperclip.paste())>100:#check if it's an image address
         pg.click(x=X, y=Y,button='right')
-        Nkey(5,'up')#move down 7times to download image
+        Nkey(5,'up')#move up 5times to download image
         time.sleep(1)
         pg.hotkey('enter')#enter to execute download
         time.sleep(2)
@@ -55,7 +55,7 @@ def imageDownload(X,Y,Object):
         time.sleep(1)
         pg.hotkey('enter')
         
-    elif pyperclip.paste().find('search')>-1:
+    elif pyperclip.paste().find('search')>-1:#check if the it is just a plain strinf of 'search', then it will execute enter and run a new link
         time.sleep(1)
         pg.hotkey('enter')
         time.sleep(5)
@@ -92,8 +92,7 @@ def DownloadLine(i,Object):
         pg.click(1906,178)
         pg.doubleClick(1906,937)
         
-    #    time.sleep(1)
-     #   Nkey(2,'down')
+
     imageDownload(228,555,Object+'a')
     imageDownload(562,555,Object+'b')
     imageDownload(978,555,Object+'c')
