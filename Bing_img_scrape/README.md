@@ -9,7 +9,7 @@
 6. In your command window, run 
    - python bing.py -k "**Your API key**" -q "**[Your search term]**" -t **[number of images required]** -r **[optional: number of images per API call, by default 150]** -i **[optional: starting index of image, by default 1]**
 7. Example:
-   - python bing.py -k "08a7dcf38a474a75a103f296885d57c8" -q "tomato" -t 850 -i 151 
+   - python bing.py -k "08a7dcf38a474a75a103f296885d57c8" -q "tomato" -t 1000
 8. A log file and a subfolder containing the images will be generated as output.
 9. The total number of saved images will be slightly more than the total number specified in the command as the final API call will generate extra images.
 
