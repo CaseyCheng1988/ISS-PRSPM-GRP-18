@@ -25,58 +25,58 @@ def Nkey(N,key):
         pg.hotkey(key)
         i+=1
 
-def imageDownload(X,Y,Object):
+def imageDownload(X,Y,a):
     pyperclip.copy('NA')
     time.sleep(2)
     pg.click(x=X, y=Y,button='right')
-    
-    time.sleep(1)
-    Nkey(3,'up')
-    time.sleep(1)
-    pg.hotkey('enter')#enter to copy image address
-    time.sleep(3)
-    pg.hotkey('ctrl','c')#in case it is not image address, it will copy its string
     time.sleep(2)
-    pg.hotkey('esc')
-    time.sleep(1)
     
-    
-    if len(pyperclip.paste())>100:#check if it's an image address
-        pg.click(x=X, y=Y,button='right')
-        Nkey(5,'up')#move up 5times to download image
-        time.sleep(1)
-        pg.hotkey('enter')#enter to execute download
-        time.sleep(2)
-        pg.hotkey('ctrl','c')
-        time.sleep(1)
-        pyperclip.copy(Object+'.jpg')
-        time.sleep(2)
-        pg.hotkey('ctrl','v')#rename the file with respective object and line location
+    z=pg.locateOnScreen('save_image.png',confidence=0.8,region=(a,779,238,175))
+    z=pg.locateOnScreen('save_image.png',confidence=0.8,region=(a,779,238,175))
+    if z!=None:#detect whether save as image pop out came out
+        Nkey(5,'up')
         time.sleep(1)
         pg.hotkey('enter')
         
-    elif pyperclip.paste().find('search')>-1:#check if the it is just a plain strinf of 'search', then it will execute enter and run a new link
-        time.sleep(1)
+    else:
+        pg.hotkey('esc')
+ 
+    time.sleep(4)
+    if pg.locateOnScreen(('download.png'),confidence=0.8,region=(11,875,1583,130))!=None:# do download if tally the download.png
         pg.hotkey('enter')
-        time.sleep(5)
-        pulldown2()
-        pullup()
+    else: 
+        pg.hotkey('esc')
 
 def pulldown():#pull down the page initially
     i=0
-    while i<200:
-       pg.doubleClick(1906,1010) 
+    while i<300:
+       pg.doubleClick(1906,1010)
        i+=1
+       
+    count=0   
+    while count<70: 
+        pg.doubleClick(1906,1010)
+        if pg.locateOnScreen('show more results.png',confidence=0.8)!=None:
+            pg.click(922,803)
+        count+=1
 
-def pulldown2():#pull down the page once enter a new link
-    i=0
-    while i<200:
-       pg.doubleClick(1906,937) 
-       i+=1
+    count1=0
+    while count1<150:
+       pg.doubleClick(1906,1010)
+       count1+=1
+    
+    count2=0
+    while count2<100:
+        pg.doubleClick(1906,1010)
+        if pg.locateOnScreen('end.png',confidence=0.8)!=None:
+            break
+        count2+=1
+    n=int(i+count+count1+count2)
+    return n
 
-def pullup():#pull up to go back the top page
+def pullup(n):#pull up to go back the top page
     i=0
-    while i<200:
+    while i<n:
        pg.doubleClick(1906,178) 
        i+=1
 
@@ -92,12 +92,11 @@ def DownloadLine(i,Object):
         pg.click(1906,178)
         pg.doubleClick(1906,937)
         
-
-    imageDownload(228,555,Object+'a')
-    imageDownload(562,555,Object+'b')
-    imageDownload(978,555,Object+'c')
-    imageDownload(1333,555,Object+'d')
-    imageDownload(1711,555,Object+'e')
+    imageDownload(228,555,247)
+    imageDownload(562,555,581)
+    imageDownload(978,555,997)
+    imageDownload(1333,555,1352)
+    imageDownload(1711,555,1495)
     
 def google(Object,line):#browser start all the way until table 
     browser.get('https://www.google.com/imghp?hl=EN')
@@ -106,8 +105,8 @@ def google(Object,line):#browser start all the way until table
     browser.find_element_by_xpath('/html/body/div/div[2]/div[2]/form/div[2]/div[1]/div[1]/div/div[2]/input').send_keys(Keys.ENTER)
     browser.implicitly_wait(10)
 
-    pulldown()
-    pullup()
+    n=pulldown()
+    pullup(n)
     i=0
     while i<line:
         DownloadLine(i,Object)
