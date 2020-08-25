@@ -6,4 +6,4 @@
 6. When browser starts, it will execute pulldown and pullup action so that maximum amount of photo will be captured in the browser. if you don't want pulldown and pullup, pls comment them out. Tt will still work, just that it will have minimal amount of images to be captured
 7.Pyautogui will do a image check on your pop out and right click and download the images.
 8.The clicking action will be click at 5 different postion, point a,b,c,d&e.
-9.After point e, it will scroll down the page and the circle begins again until it detected the end of page then only it will break the loop
+9.After point e, it will scroll down the page and the cycle will loop again until it detected the end of page then only it will break the loop
