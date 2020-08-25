@@ -81,7 +81,6 @@ def pullup(n):#pull up to go back the top page
        i+=1
 
 def DownloadLine(i,Object):
-    time.sleep(2)
     if i!=0:
         pg.hotkey('esc')
         time.sleep(1)
@@ -90,11 +89,11 @@ def DownloadLine(i,Object):
         pg.doubleClick(1906,937)
         pg.click(1906,937)
         
-    imageDownload(228,555,247,Object+str(datetime.datetime.now().strftime("%H:%M:%S").replace(':',''))+str(i)+'a.jpg')
-    imageDownload(562,555,581,Object+str(datetime.datetime.now().strftime("%H:%M:%S").replace(':',''))+str(i)+'b.jpg')
-    imageDownload(978,555,997,Object+str(datetime.datetime.now().strftime("%H:%M:%S").replace(':',''))+str(i)+'c.jpg')
-    imageDownload(1333,555,1352,Object+str(datetime.datetime.now().strftime("%H:%M:%S").replace(':',''))+str(i)+'d.jpg')
-    imageDownload(1711,555,1495,Object+str(datetime.datetime.now().strftime("%H:%M:%S").replace(':',''))+str(i)+'e.jpg')
+    imageDownload(228,555,247,Object+str(datetime.datetime.now().strftime("%y%m%d%H%M%S"))+str(i)+'a.jpg')
+    imageDownload(562,555,581,Object+str(datetime.datetime.now().strftime("%y%m%d%H%M%S"))+str(i)+'b.jpg')
+    imageDownload(978,555,997,Object+str(datetime.datetime.now().strftime("%y%m%d%H%M%S"))+str(i)+'c.jpg')
+    imageDownload(1333,555,1352,Object+str(datetime.datetime.now().strftime("%y%m%d%H%M%S"))+str(i)+'d.jpg')
+    imageDownload(1711,555,1495,Object+str(datetime.datetime.now().strftime("%y%m%d%H%M%S"))+str(i)+'e.jpg')
     
 def google(Object,line):#browser start all the way until table 
     browser.get('https://www.google.com/imghp?hl=EN')
@@ -107,10 +106,13 @@ def google(Object,line):#browser start all the way until table
     pullup(n)
     i=0
     while i<line:
-        if pg.locateOnScreen('end.png',confidence=0.8)!=None:
+        z1=pg.locateOnScreen('end.png',confidence=0.8)
+        z1=pg.locateOnScreen('end.png',confidence=0.8)
+        if z1!=None:
             break
-        
-        DownloadLine(i,Object)
+        else:
+            DownloadLine(i,Object)
+
         i+=1
     
 google('raw chicken meat',400)# pls input here. 
