@@ -119,5 +119,5 @@ google('raw chicken meat',400)# pls input here.
 finish=time.perf_counter()
 print(f'Finished in {round(finish-start,2)}second(s)')
 #Object/Chicken Meat is the object is to google search
-#100/line in above means the number of lines needed to download. 
-#For example if 1000 images were to be downloaded, then 200lines has to be inputted in line
+#400/line in above means the number of lines needed to download. 
+#For example if 1000 images were to be downloaded, then 200lines has to be inputted in line. However, it will be limited to google image end page, usually max is 400images
