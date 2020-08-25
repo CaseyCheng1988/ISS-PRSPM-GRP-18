@@ -88,7 +88,6 @@ def DownloadLine(i,Object):
         pg.doubleClick(1906,937)
         pg.doubleClick(1906,937)
         pg.doubleClick(1906,937)
-        #pg.click(1906,178)
         pg.click(1906,937)
         
     imageDownload(228,555,247,Object+str(datetime.datetime.now().strftime("%H:%M:%S").replace(':',''))+str(i)+'a.jpg')
@@ -115,6 +114,8 @@ def google(Object,line):#browser start all the way until table
         i+=1
     
 google('raw chicken meat',400)# pls input here. 
+finish=time.perf_counter()
+print(f'Finished in {round(finish-start,2)}second(s)')
 #Object/Chicken Meat is the object is to google search
 #100/line in above means the number of lines needed to download. 
 #For example if 1000 images were to be downloaded, then 200lines has to be inputted in line
