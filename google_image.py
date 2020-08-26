@@ -48,6 +48,8 @@ def imageDownload(X,Y,a,Object):
         pg.hotkey('esc')
 
 def pulldown():#pull down the page initially
+    pg.click(1893,983)
+    time.sleep(1)
     i=0
     while i<300:
        pg.doubleClick(1906,1010)
@@ -96,6 +98,7 @@ def DownloadLine(i,Object):
     imageDownload(1711,555,1495,Object+str(datetime.datetime.now().strftime("%y%m%d%H%M%S"))+str(i)+'e.jpg')
     
 def google(Object,line):#browser start all the way until table 
+    
     browser.get('https://www.google.com/imghp?hl=EN')
     browser.find_element_by_xpath('/html/body/div/div[2]/div[2]/form/div[2]/div[1]/div[1]/div/div[2]/input').send_keys(Object)
     browser.implicitly_wait(1)
@@ -114,10 +117,12 @@ def google(Object,line):#browser start all the way until table
             DownloadLine(i,Object)
 
         i+=1
-    
-google('raw chicken meat',400)# pls input here. 
+
+google('raw salmon meat',400)
+google('raw salmon',400)
+google('salmon sashimi',400)# pls input here. 
 finish=time.perf_counter()
 print(f'Finished in {round(finish-start,2)}second(s)')
 #Object/Chicken Meat is the object is to google search
-#400/line in above means the number of lines needed to download. 
-#For example if 1000 images were to be downloaded, then 200lines has to be inputted in line. However, it will be limited to google image end page, usually max is 400images
+#100/line in above means the number of lines needed to download. 
+#For example if 1000 images were to be downloaded, then 200lines has to be inputted in line
