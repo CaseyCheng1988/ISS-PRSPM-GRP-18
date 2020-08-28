@@ -18,33 +18,33 @@ prefs = {"profile.managed_default_content_settings.images":2}
 chromeOptions.add_experimental_option("prefs",prefs)
 options = Options()
 options.add_argument('start-maximized') # 
-browser=webdriver.Chrome('C:\\Users\\tanda\\Documents\\python testing\\chromedriver',options=options)  
+browser=webdriver.Chrome('C://Users//user//OneDrive - National University of Singapore//IS5002//projects//chromedriver',options=options)  
 pg.FAILSAFE=True
 
 def Pause(pause):
-    if keyboard.is_pressed('f2'):
+    if keyboard.is_pressed('esc'):
             pause=1
     i=0
     while pause:
         if i==0:
-            playsound('C:/Users/tanda/Documents/python testing/Ding-sound-effect.mp3')
+            playsound('C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/google_scrape_file/google_scrape/Ding-sound-effect.mp3')
             print('paused')
-        if keyboard.is_pressed('f7'):
-            playsound('C:/Users/tanda/Documents/python testing/Ding-sound-effect.mp3')
+        if keyboard.is_pressed('insert'):
+            playsound('C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/google_scrape_file/google_scrape/Ding-sound-effect.mp3')
             print('unpaused')
             pause=0
         i+=1
 
 def PauseImage(pause,X,Y,a,Object):
-    if keyboard.is_pressed('f2'):
+    if keyboard.is_pressed('esc'):
             pause=1
     i=0
     while pause:
         if i==0:
-            playsound('C:/Users/tanda/Documents/python testing/Ding-sound-effect.mp3')
+            playsound('C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/google_scrape_file/google_scrape/Ding-sound-effect.mp3')
             print('paused')
-        if keyboard.is_pressed('f7'):
-            playsound('C:/Users/tanda/Documents/python testing/Ding-sound-effect.mp3')
+        if keyboard.is_pressed('insert'):
+            playsound('C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/google_scrape_file/google_scrape/Ding-sound-effect.mp3')
             print('unpaused')
             imageDownload(X,Y,a,Object)
             pause=0
