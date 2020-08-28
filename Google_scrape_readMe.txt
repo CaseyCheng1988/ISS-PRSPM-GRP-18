@@ -7,4 +7,4 @@
 7.Pyautogui will do a image check on your pop out and right click and download the images.
 8.The clicking action will be click at 5 different postion, point a,b,c,d&e.
 9.After point e, it will scroll down the page and the cycle will loop again until it detected the end of page then only it will break the loop
-10. You can pause the program by pressing 'esc' button on your keybboard and start by pressing 'insert' in your keyboard
+10. You can pause the program by pressing 'esc' button on your keybboard and start by pressing 'insert' in your keyboard. Sometimes, might need to press multiple times of 'esc' to stop it because it runs on infinite while loop
