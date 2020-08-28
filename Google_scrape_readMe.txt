@@ -1,4 +1,4 @@
-1. Python Selenium Module,pyautogui, pyperclip,OpenCV,playsound is needed for this to work
+1. Python Selenium,pyautogui, pyperclip,OpenCV,playsound,keyboard modules are needed for this to work
 2. Please paste the appropriate path of your selenium chromedriver in line 19 and appropriate path for your Ding-sound-effect.mp3
 3. Please download google_scrape_file.zip for its PNG images and Ding-sound-effect.mp3 because the program needs it to detect the background in google image and pls mount it at the same folder with google_image.py
 4. Please make sure the download pop out in google chrome is maximized so that the program can execute download command
