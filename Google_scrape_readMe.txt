@@ -8,3 +8,4 @@
 8.The clicking action will be click at 5 different postion, point a,b,c,d&e.
 9.After point e, it will scroll down the page and the cycle will loop again until it detected the end of page then only it will break the loop
 10. You can pause the program by pressing 'esc' button on your keybboard and start by pressing 'insert' in your keyboard. Sometimes, might need to press multiple times of 'esc' to stop it because it runs on infinite while loop
+11. if the pause function are successfully initiated, it will come out a ding sound. If it is unpaused by pressing 'insert', it will come out a ding sound again
