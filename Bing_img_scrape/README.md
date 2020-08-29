@@ -9,7 +9,7 @@
 6. In your command window, run 
    - python bing.py -k "**Your API key**" -q "**[Your search term]**" -t **[number of images required]** -r **[optional: number of images per API call, by default 150]** -i **[optional: starting index of image, by default 1]**
 7. Example:
-   - python bing.py -k "08a7dcf38a474a75a103f296885d57c8" -q "tomato" -t 1000
+   - python bing.py -k "08a7dcf38a474a75a103f296885d57c8" -q "potato" -t 1000
 8. A log file and a subfolder containing the images will be generated as output.
 9. The total number of saved images will be slightly more than the total number specified in the command as the final API call will generate extra images.
 
@@ -17,8 +17,18 @@
 ## Removing Duplicates 
 1. The following python libraries need to be installed:
    - os, argparse
-6. In your command window, run 
+6. In your command window, run
    - python remove_duplicates.py -d "**Your Image Directory Path**"
-3. In your command window, run 
+3. Example:
    $ python remove_duplicates.py -d "C:\Users\onnwe\Desktop\ISS-PRSPM-GRP-18\Bing_img_scrape\tomato"
 4. Duplicated image will be removed upon confirmation
+
+
+## Prefix Adder
+1. The following python libraries need to be installed:
+   - os, argparse
+6. In your command window, run
+   - python remove_duplicates.py -d "**Your Image Directory Path**" -p "**Your Prefix**"
+3. Example:
+   $ python remove_duplicates.py -d "C:\Users\onnwe\Desktop\ISS-PRSPM-GRP-18\Bing_img_scrape\tomato" -p "T"
+4. All files(Images) within the folder specified will have a prefix added to their existing filename
