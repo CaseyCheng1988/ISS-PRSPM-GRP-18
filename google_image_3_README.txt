@@ -1,4 +1,4 @@
-1. Google_image_3 is the 3rd version, it basically can google scrape without browser from popping out and
+1. Google_image_3 is the 3rd version, it basically can google scrape with or without browser from popping out and
 it adapted some of the codes from bing.py and https://pycheat.com/download_img.php
 
 2. So just input your SEARCH_TERM into the google_scrape.xlsx in SEARCH_TERM column 
