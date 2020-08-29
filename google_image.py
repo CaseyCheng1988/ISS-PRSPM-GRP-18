@@ -21,17 +21,20 @@ options.add_argument('start-maximized') #
 browser=webdriver.Chrome('C://Users//user//OneDrive - National University of Singapore//IS5002//projects//chromedriver',options=options)  
 pg.FAILSAFE=True
 
+def Ding():
+    playsound('C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/google_scrape_file/google_scrape/Ding-sound-effect.mp3')
+
 def Pause(pause):
     if keyboard.is_pressed('esc'):
             pause=1
     i=0
     while pause:
         if i==0:
-            playsound('C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/google_scrape_file/google_scrape/Ding-sound-effect.mp3')
+            Ding()
             print('paused')
         if keyboard.is_pressed('insert'):
-            playsound('C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/google_scrape_file/google_scrape/Ding-sound-effect.mp3')
-            print('unpaused')
+            Ding()
+            print('resumed')
             pause=0
         i+=1
 
@@ -41,11 +44,11 @@ def PauseImage(pause,X,Y,a,Object):
     i=0
     while pause:
         if i==0:
-            playsound('C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/google_scrape_file/google_scrape/Ding-sound-effect.mp3')
+            Ding()
             print('paused')
         if keyboard.is_pressed('insert'):
-            playsound('C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/google_scrape_file/google_scrape/Ding-sound-effect.mp3')
-            print('unpaused')
+            Ding()
+            print('resumed')
             imageDownload(X,Y,a,Object)
             pause=0
         i+=1
@@ -166,9 +169,14 @@ def google(Object,line):#browser start all the way until table
 
         i+=1
 
-google('raw salmon meat',400)
-google('raw salmon',400)
-google('salmon sashimi',400)# pls input here. 
+        
+# pls input here.
+google('raw Celery',400)
+google('UNCOOKED Celery',400)
+google('vegetable Celery',400)
+google('green Celery',400)
+
+ 
 finish=time.perf_counter()
 print(f'Finished in {round(finish-start,2)}second(s)')
 #Object/Chicken Meat is the object is to google search
