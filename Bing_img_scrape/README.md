@@ -18,7 +18,7 @@
 1. The following python libraries need to be installed:
    - os, argparse
 6. In your command window, run
-   - python remove_duplicates.py -d "**Your Image Directory Path**"
+   - python remove_duplicates.py -d **[Your Image Directory Path]**
 3. Example:
    $ python remove_duplicates.py -d "C:\Users\onnwe\Desktop\ISS-PRSPM-GRP-18\Bing_img_scrape\tomato"
 4. Duplicated image will be removed upon confirmation
@@ -28,7 +28,7 @@
 1. The following python libraries need to be installed:
    - os, argparse
 6. In your command window, run
-   - python prefix_adder.py -d "**Your Image Directory Path**" -p "**Your Prefix**"
+   - python prefix_adder.py -d **[Your Image Directory Path]** -p **[Your Prefix]** -r **[Optional: To rename (1) or add a prefix (0), by default is 1 (set to 0 if you want to add a prefix)]**
 3. Example:
    $ python prefix_adder.py -d "C:\Users\onnwe\Desktop\ISS-PRSPM-GRP-18\Bing_img_scrape\tomato" -p "T"
 4. All files(Images) within the folder specified will have a prefix added to their existing filename
