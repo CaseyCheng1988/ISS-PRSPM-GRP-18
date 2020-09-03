@@ -23,7 +23,7 @@ options.add_argument('start-maximized') #
 options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
 
-excelInputPath="C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/ISS-PRSPM-GRP-18-master/ISS-PRSPM-GRP-18-master/google_scrape/google_scrape.xlsx"
+excelInputPath="C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/ISS-PRSPM-GRP-18-master/ISS-PRSPM-GRP-18-master/google_scrape/google_scrape_1.xlsx"
 chromedriverPath='C://Users//user//OneDrive - National University of Singapore//IS5002//projects//chromedriver'
 
 
@@ -43,7 +43,15 @@ def google(SEARCH_TERM):
     
     #passing site url
     driver.get(site)
-    #if you just want to download 10-15 images then skip the while loop and just write
+    
+    #the first image anchor
+    driver.find_element_by_xpath("/html/body/div[2]/c-wiz/div[3]/div[1]/div/div/div/div/div[1]/div[1]/div[1]/a[1]/div[1]/img").click()
+    driver.implicitly_wait(8)
+    
+    #click see more
+    driver.find_element_by_xpath("/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div[1]/div[3]/div[3]/c-wiz/div/div/div/div[2]/a").click()
+    
+    
     driver.execute_script("window.scrollBy(0,document.body.scrollHeight)")
 
     #below while loop scrolls the webpage 10 times(if available)
@@ -56,7 +64,7 @@ def google(SEARCH_TERM):
             driver.find_element_by_xpath("/html/body/div[2]/c-wiz/div[3]/div[1]/div/div/div/div/div[5]/input").click()
         except Exception as e:
             pass
-        time.sleep(5)
+        driver.implicitly_wait(8)
         i+=1
 
     #parsing
