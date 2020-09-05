@@ -45,11 +45,21 @@ def google(SEARCH_TERM):
     driver.get(site)
     
     #the first image anchor
-    driver.find_element_by_xpath("/html/body/div[2]/c-wiz/div[3]/div[1]/div/div/div/div/div[1]/div[1]/div[1]/a[1]/div[1]/img").click()
-    driver.implicitly_wait(8)
-    
-    #click see more
-    driver.find_element_by_xpath("/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div[1]/div[3]/div[3]/c-wiz/div/div/div/div[2]/a").click()
+    i=1
+    while True:
+        #start with first anchor
+        driver.find_element_by_xpath("/html/body/div[2]/c-wiz/div[3]/div[1]/div/div/div/div/div[1]/div[1]/div["+str(i)+"]/a[1]/div[1]/img").click()
+        driver.implicitly_wait(8)
+        
+        try:
+            #click see more
+            driver.find_element_by_xpath("/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div[1]/div[3]/div[3]/c-wiz/div/div/div/div[2]/a").click()
+            break
+        #to deal with google licensed photo,if don't have click see more, it will go back and proceed with the next picture
+        except Exception:
+            driver.back()
+            driver.implicitly_wait(8)
+        i+=1
     
     
     driver.execute_script("window.scrollBy(0,document.body.scrollHeight)")
