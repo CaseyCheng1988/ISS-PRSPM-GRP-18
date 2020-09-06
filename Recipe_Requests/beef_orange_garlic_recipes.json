@@ -1,0 +1,791 @@
+[
+    {
+        "Name": "",
+        "CookingTime": {
+            "Value": "",
+            "Unit": ""
+        },
+        "Ingredients": [],
+        "Link": "https://www.yummly.com/recipes/beef"
+    },
+    {
+        "Name": "Korean Beef Kabobs",
+        "CookingTime": {
+            "Value": "40",
+            "Unit": "Minutes"
+        },
+        "Ingredients": [
+            {
+                "Ingredient": "soy sauce",
+                "Amount": "1",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "fresh ginger",
+                "Amount": "1/4",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "minced garlic",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "honey",
+                "Amount": "1/4",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "green onions",
+                "Amount": "6",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "red pepper flakes",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "beef",
+                "Amount": "2",
+                "Unit": "pounds"
+            },
+            {
+                "Ingredient": "green bell pepper",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "red bell pepper",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "Orange",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "red onion",
+                "Amount": "1",
+                "Unit": ""
+            }
+        ],
+        "Link": "https://www.yummly.com/recipe/Korean-Beef-Kabobs-1233081"
+    },
+    {
+        "Name": "Beef and Orange Dumplings",
+        "CookingTime": {
+            "Value": "55",
+            "Unit": "Minutes"
+        },
+        "Ingredients": [
+            {
+                "Ingredient": "beef",
+                "Amount": "6",
+                "Unit": "ounces"
+            },
+            {
+                "Ingredient": "garlic cloves",
+                "Amount": "2",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "fresh ginger",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "soy sauce",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "rice wine",
+                "Amount": "1",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "5-spice powder",
+                "Amount": "1/2",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "kosher salt",
+                "Amount": "1",
+                "Unit": "pinch"
+            },
+            {
+                "Ingredient": "ground black pepper",
+                "Amount": "1/4",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "orange juice",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "orange blossom water",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "coconut oil",
+                "Amount": "1",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "wonton wrappers",
+                "Amount": "30",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "beef",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "water",
+                "Amount": "1",
+                "Unit": "bowl"
+            },
+            {
+                "Ingredient": "soy sauce",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "canola oil",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "orange blossom water",
+                "Amount": "1/2",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "orange juice",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "5-spice powder",
+                "Amount": "1",
+                "Unit": "pinch"
+            },
+            {
+                "Ingredient": "sesame oil",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "jalapenos",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "garlic cloves",
+                "Amount": "2",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "scallions",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "mint leaves",
+                "Amount": "",
+                "Unit": ""
+            }
+        ],
+        "Link": "https://www.yummly.com/recipe/Beef-and-Orange-Dumplings-758552"
+    },
+    {
+        "Name": "Orange Ginger Garlic Beef",
+        "CookingTime": {
+            "Value": "55",
+            "Unit": "Minutes"
+        },
+        "Ingredients": [
+            {
+                "Ingredient": "beef",
+                "Amount": "2",
+                "Unit": "pounds"
+            },
+            {
+                "Ingredient": "corn starch",
+                "Amount": "1/2",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "vegetable oil",
+                "Amount": "1/2",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "cornstarch",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "fresh orange juice",
+                "Amount": "1/2",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "orange zest",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "molasses",
+                "Amount": "3",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "rice vinegar",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "soy sauce",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "garlic",
+                "Amount": "3",
+                "Unit": "cloves"
+            },
+            {
+                "Ingredient": "fresh ginger",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "green onion",
+                "Amount": "1/2",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "sesame seeds",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            }
+        ],
+        "Link": "https://www.yummly.com/recipe/Orange-Ginger-Garlic-Beef-2364155"
+    },
+    {
+        "Name": "Orange Ginger Beef Stir Fry",
+        "CookingTime": {
+            "Value": "20",
+            "Unit": "Minutes"
+        },
+        "Ingredients": [
+            {
+                "Ingredient": "beef",
+                "Amount": "1",
+                "Unit": "pound"
+            },
+            {
+                "Ingredient": "olive oil",
+                "Amount": "2",
+                "Unit": "teaspoons"
+            },
+            {
+                "Ingredient": "medium carrots",
+                "Amount": "3",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "red bell pepper",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "green beans",
+                "Amount": "12",
+                "Unit": "ounces"
+            },
+            {
+                "Ingredient": "orange juice",
+                "Amount": "1/2",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "orange zest",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "soy sauce",
+                "Amount": "3",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "fresh ginger",
+                "Amount": "1",
+                "Unit": "inch"
+            },
+            {
+                "Ingredient": "honey",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "Sriracha",
+                "Amount": "1",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "cornstarch",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "sesame seeds",
+                "Amount": "",
+                "Unit": ""
+            }
+        ],
+        "Link": "https://www.yummly.com/recipe/Orange-Ginger-Beef-Stir-Fry-2067319"
+    },
+    {
+        "Name": "Mongolian Beef With Cabbage for HCG Diet",
+        "CookingTime": {
+            "Value": "10",
+            "Unit": "Minutes"
+        },
+        "Ingredients": [
+            {
+                "Ingredient": "beef",
+                "Amount": "100",
+                "Unit": "grams"
+            },
+            {
+                "Ingredient": "cabbage",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "beef broth",
+                "Amount": "1/2",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "apple cider vinegar",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "Orange",
+                "Amount": "3",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "lemon",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "braggs liquid aminos",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "garlic",
+                "Amount": "2",
+                "Unit": "cloves"
+            },
+            {
+                "Ingredient": "green onion",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "chili powder",
+                "Amount": "1/4",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "salt",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "black pepper",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "stevia",
+                "Amount": "",
+                "Unit": ""
+            }
+        ],
+        "Link": "https://www.yummly.com/recipe/Mongolian-Beef-With-Cabbage-for-HCG-Diet-2441828"
+    },
+    {
+        "Name": "Cuban-Style Shredded Beef Tacos with Mojo Salsa",
+        "CookingTime": {
+            "Value": "55",
+            "Unit": "Minutes"
+        },
+        "Ingredients": [
+            {
+                "Ingredient": "beef",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "salsa",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "flour tortillas",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "hot sauce",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "medium tomato",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "jalapeno pepper",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "white onion",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "garlic",
+                "Amount": "2",
+                "Unit": "cloves"
+            },
+            {
+                "Ingredient": "lime",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "Orange",
+                "Amount": "1/2",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "chopped cilantro",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "basil",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "salt",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "pepper",
+                "Amount": "",
+                "Unit": ""
+            }
+        ],
+        "Link": "https://www.yummly.com/recipe/Cuban-Style-Shredded-Beef-Tacos-with-Mojo-Salsa-2503211"
+    },
+    {
+        "Name": "Crispy Orange Beef",
+        "CookingTime": {
+            "Value": "20",
+            "Unit": "Minutes"
+        },
+        "Ingredients": [
+            {
+                "Ingredient": "beef",
+                "Amount": "1 1/2",
+                "Unit": "pounds"
+            },
+            {
+                "Ingredient": "soy sauce",
+                "Amount": "3",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "corn starch",
+                "Amount": "1/4",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "Orange",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "hoisin sauce",
+                "Amount": "3",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "rice vinegar",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "chopped garlic",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "ginger",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "red pepper flakes",
+                "Amount": "1/2",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "green onions",
+                "Amount": "2",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "rice",
+                "Amount": "",
+                "Unit": ""
+            }
+        ],
+        "Link": "https://www.yummly.com/recipe/Crispy-Orange-Beef-9162663"
+    },
+    {
+        "Name": "Crispy Orange Beef",
+        "CookingTime": {
+            "Value": "30",
+            "Unit": "Minutes"
+        },
+        "Ingredients": [
+            {
+                "Ingredient": "beef",
+                "Amount": "1/2",
+                "Unit": "pound"
+            },
+            {
+                "Ingredient": "coconut sugar",
+                "Amount": "1/3",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "rice wine vinegar",
+                "Amount": "1/3",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "sea salt",
+                "Amount": "1",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "coconut aminos",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "coconut oil",
+                "Amount": "2",
+                "Unit": "cups"
+            },
+            {
+                "Ingredient": "arrowroot powder",
+                "Amount": "1/4",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "orange zest",
+                "Amount": "2",
+                "Unit": "teaspoons"
+            },
+            {
+                "Ingredient": "ginger",
+                "Amount": "3",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "garlic cloves",
+                "Amount": "3",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "broccoli",
+                "Amount": "1",
+                "Unit": ""
+            }
+        ],
+        "Link": "https://www.yummly.com/recipe/Crispy-Orange-Beef-2018526"
+    },
+    {
+        "Name": "Beef Carnitas Tacos",
+        "CookingTime": {
+            "Value": "60",
+            "Unit": "Minutes"
+        },
+        "Ingredients": [
+            {
+                "Ingredient": "beef",
+                "Amount": "5",
+                "Unit": "pounds"
+            },
+            {
+                "Ingredient": "green pepper",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "red pepper",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "onion",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "orange juice",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "cajun spice",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "pickled jalapenos",
+                "Amount": "7",
+                "Unit": "ounces"
+            },
+            {
+                "Ingredient": "water",
+                "Amount": "4",
+                "Unit": "cups"
+            },
+            {
+                "Ingredient": "corn tortillas",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "salsa",
+                "Amount": "",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "avocado",
+                "Amount": "",
+                "Unit": ""
+            }
+        ],
+        "Link": "https://www.yummly.com/recipe/Beef-Carnitas-Tacos-9070108"
+    },
+    {
+        "Name": "Orange Beef Stir-Fry",
+        "CookingTime": {
+            "Value": "20",
+            "Unit": "Minutes"
+        },
+        "Ingredients": [
+            {
+                "Ingredient": "orange juice",
+                "Amount": "1/4",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "cornstarch",
+                "Amount": "1",
+                "Unit": "tablespoon"
+            },
+            {
+                "Ingredient": "rice vinegar",
+                "Amount": "2",
+                "Unit": "teaspoons"
+            },
+            {
+                "Ingredient": "beef",
+                "Amount": "1",
+                "Unit": "pound"
+            },
+            {
+                "Ingredient": "salt",
+                "Amount": "1",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "fresh ground black pepper",
+                "Amount": "1/4",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "canola oil",
+                "Amount": "2",
+                "Unit": "tablespoons"
+            },
+            {
+                "Ingredient": "crushed red pepper flakes",
+                "Amount": "1",
+                "Unit": "pinch"
+            },
+            {
+                "Ingredient": "medium carrot",
+                "Amount": "1",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "shiitake mushrooms",
+                "Amount": "4",
+                "Unit": "ounces"
+            },
+            {
+                "Ingredient": "garlic cloves",
+                "Amount": "2",
+                "Unit": ""
+            },
+            {
+                "Ingredient": "fresh ginger",
+                "Amount": "1 1/2",
+                "Unit": "teaspoons"
+            },
+            {
+                "Ingredient": "orange zest",
+                "Amount": "1",
+                "Unit": "teaspoon"
+            },
+            {
+                "Ingredient": "gluten",
+                "Amount": "3/4",
+                "Unit": "cup"
+            },
+            {
+                "Ingredient": "snow peas",
+                "Amount": "1 1/4",
+                "Unit": "cups"
+            }
+        ],
+        "Link": "https://www.yummly.com/recipe/Orange-Beef-Stir-Fry-1550521"
+    }
+]
