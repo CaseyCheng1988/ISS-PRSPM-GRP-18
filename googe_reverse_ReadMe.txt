@@ -1,6 +1,6 @@
 -----google_reverse.py-----
 ********************************************************************************************************
-this is a function which will allow images to be uploaded into google image then revert with a 
+this is a function which will allow images(regardless,bing,google,yandex images..etc) to be uploaded into google image then revert with a 
 label or string which google thinks relevant.
 
 this uses selenium,pyautogui, playsound,os. The selenium will first be popping out google image search, after it 
