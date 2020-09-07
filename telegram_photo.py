@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 """
 Created on Sun Aug 23 13:08:50 2020
-
 @author: user
 """
 import time
@@ -24,8 +23,8 @@ options.add_argument('start-maximized') #
 options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
 
-chromedriverPath='C://Users//user//OneDrive - National University of Singapore//IS5002//projects//chromedriver'
-folderpath=r'C:\Users\user\OneDrive - National University of Singapore\IS5002\projects'
+chromedriverPath='C:\\Users\\tanda\\Documents\\python testing\\chromedriver'
+folderpath=r'C:\Users\tanda\Documents\python testing'
 A=['STEAK','BEEF','SALMON','CHICKEN','BROCCOLI','CABBAGE','CARROT'
    ,'CELERY','CORN','CUCUMBER','BRINJAL','EGGPLANT','GREEN BEAN'
    ,'BELL PEPPER','OLIVE','ONION','POTATO','SPINACH','TOMATO'
@@ -82,9 +81,10 @@ def google_reverse(filepath):
     pg.hotkey('tab')
     pg.hotkey('enter')
     pyperclip.copy(filepath)
-    time.sleep(1)
+    time.sleep(4)
     pg.hotkey('ctrl','v')
     pg.hotkey('enter')
+    pg.hotkey('esc')
     
     try:
         text= driver.find_element_by_xpath("/html/body/div[5]/div[2]/div[9]/div[1]/div[2]/div/div[2]/div[1]/div/div[2]/a").text
@@ -92,17 +92,13 @@ def google_reverse(filepath):
         try:
             text= driver.find_element_by_xpath("/html/body/div[7]/div[2]/div[9]/div[1]/div[2]/div/div[2]/div[1]/div/div[2]/a").text
         except Exception:
-            text = driver.find_element_by_id("topstuff").text
+            try:
+                text = driver.find_element_by_id("topstuff").text
+            except Exception:
+                driver.close()
     driver.close()
     return text
 
-def rec_google(path):
-    try:
-        return google_reverse(path)
-    except Exception:
-        driver = webdriver.Chrome(chromedriverPath,options=options)
-        driver.close()
-        rec_google(path)
 
 def start(update,context):
     update.message.reply_text('Hi,welcome')
