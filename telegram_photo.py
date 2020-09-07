@@ -38,7 +38,7 @@ a=['steak','steak','salmon','chicken','broccoli','cabbage','carrot'
    ,'apple','avocado','banana','lemon','bread','cheese'
    ,'mushroom','egg'
    ]
-ingredients = []
+tele_ingredients = []
 
 def file():
     folder=os.listdir(folderpath)
@@ -110,6 +110,7 @@ def message(update,context):
     #and it will activate yummly function
     if update.message.text.upper().find('TO YUMMLY')>-1:
         update.message.reply_text('transfering to yummly')
+        ingredients = list(filter(None, tele_ingredients)) 
         print(ingredients)
         
         #main target for yummly function
@@ -119,7 +120,7 @@ def message(update,context):
         print(yummly)
         update.message.reply_text(yummly)
         
-        ingredients.clear()
+        tele_ingredients.clear()
 
 def receive_image(update,context):
     try:
@@ -134,7 +135,7 @@ def receive_image(update,context):
         google_label=ingredientsFilter(google_label)
         print(google_label)
         update.message.reply_text(google_label)
-        ingredients.append(google_label)
+        tele_ingredients.append(google_label)
         
     except Exception as e:
         print(str(e))
