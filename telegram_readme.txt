@@ -3,5 +3,6 @@
 3. Main focus should be on receive_image function, because it is an interrupt based system.
 4. This receive_image function can only work when the photos are attached to file not send like normal photos, after it is sent from user to danielthxbot, 
 the photo will be autodownloaded into the same folder which contains telegram_photo.py
-5. for Yummly, Please focus on message function.
-6. for Model, Please focus on file function.
+5. By pressing 'to yummly' in telegram danielthxbot, it will activate the yummly function and print the list of ingredients
+6. for Yummly, Please focus on message function.
+7. for Model, Please focus on file function.
