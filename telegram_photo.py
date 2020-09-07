@@ -121,6 +121,7 @@ def message(update,context):
         update.message.reply_text(yummly)
         
         tele_ingredients.clear()
+        ingredients.clear()
 
 def receive_image(update,context):
     try:
