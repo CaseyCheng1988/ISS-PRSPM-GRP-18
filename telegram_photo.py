@@ -1,10 +1,10 @@
-  # -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 """
 Created on Sun Aug 23 13:08:50 2020
 @author: user
 """
 import time
-from req_recipe import main
+from req_recipe import main # import Jie Shen's req_recipe.py main function
 from telegram.ext import Updater, CommandHandler,MessageHandler,Filters
 import os,pyperclip
 import pyautogui as pg
