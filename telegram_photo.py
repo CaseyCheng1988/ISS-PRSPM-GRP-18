@@ -109,6 +109,8 @@ def start(update,context):
     
 def message(update,context):
     print(update.message.text)
+    #Type 'to yummly' in telegram danielthx account
+    #and it will activate yummly function
     if update.message.text.upper().find('TO YUMMLY')>-1:
         update.message.reply_text('transfering to yummly')
         print(ingredients)
