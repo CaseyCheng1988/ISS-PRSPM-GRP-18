@@ -1,4 +1,4 @@
- # -*- coding: utf-8 -*-
+  # -*- coding: utf-8 -*-
 """
 Created on Sun Aug 23 13:08:50 2020
 @author: user
@@ -23,8 +23,9 @@ options.add_argument('start-maximized') #
 options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
 
-chromedriverPath='C:\\Users\\tanda\\Documents\\python testing\\chromedriver'
-folderpath=r'C:\Users\tanda\Documents\python testing'
+chromedriverPath='C://Users//user//OneDrive - National University of Singapore//IS5002//projects//chromedriver'
+#folderpath of the python_telegram_photo
+folderpath=r'C:\Users\user\OneDrive - National University of Singapore\IS5002\projects'
 A=['STEAK','BEEF','SALMON','CHICKEN','BROCCOLI','CABBAGE','CARROT'
    ,'CELERY','CORN','CUCUMBER','BRINJAL','EGGPLANT','GREEN BEAN'
    ,'BELL PEPPER','OLIVE','ONION','POTATO','SPINACH','TOMATO'
