@@ -115,6 +115,7 @@ def message(update,context):
         
         #main target for yummly function
         #ingredients list/array to input to yummly main function
+        #from yummly, it should output standard strings
         yummly=main(ingredients)
         print(yummly)
         update.message.reply_text(yummly)
