@@ -19,8 +19,6 @@ options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
 
 chromedriverPath='C://Users//user//OneDrive - National University of Singapore//IS5002//projects//chromedriver'
-folderpath=r'C:\Users\user\OneDrive - National University of Singapore\IS5002\projects\ISS-PRSPM-GRP-18-master\ISS-PRSPM-GRP-18-master\cleaned google datas\5Sep2020\bell pepper'
-excelpath=r'C:\Users\usezr\OneDrive - National University of Singapore\IS5002\projects\google_label.xlsx'
 driver = webdriver.Chrome(chromedriverPath,options=options)
 
 def webhook_remover(TOKEN):
