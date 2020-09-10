@@ -4,11 +4,11 @@ Created on Sun Aug 23 13:08:50 2020
 @author: user
 """
 import time
+from webhook_remover import webhook_remover
 from req_recipe import main # import Jie Shen's req_recipe.py main function
-from telegram.ext import Updater, CommandHandler,MessageHandler,Filters
-import os,pyperclip
+from telegram.ext import Updater,MessageHandler,Filters
+import os,pyperclip,threading
 import pyautogui as pg
-import pandas as pd
 start=time.perf_counter()
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -22,7 +22,7 @@ options.add_argument('--disable-gpu')  # applicable to windows os only
 options.add_argument('start-maximized') # 
 options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
-
+TOKEN='1117701604:AAFffyfiR5PyIZHCtTxDiSPwe87YuO8S3x4'
 chromedriverPath='C://Users//user//OneDrive - National University of Singapore//IS5002//projects//chromedriver'
 #folderpath of the python_telegram_photo
 folderpath=r'C:\Users\user\OneDrive - National University of Singapore\IS5002\projects'
@@ -44,11 +44,11 @@ def file():
     folder=os.listdir(folderpath)
     i=0
     FILE=[]
+    #print(folder)
     while i<len(folder):
-        if folder[i].find('file_')>-1:
-            file=int(folder[i].replace('file_','').replace('.JPG',''))
+        if folder[i].find('file_')>-1 and folder[i].find('jpg') >-1:
+            file=int(folder[i].replace('file_','').replace('.jpg',''))
             FILE.append(file)
-
         i+=1
     filepath=folderpath+'/file_'+str(max(FILE))
     filepath=filepath.replace('/','\,').replace(',','')
@@ -57,7 +57,14 @@ def file():
     #google_reverse function is a temporary substitute to the model
     #input to it is the newly downloaded image filepath from telegram
     #output is the 25 different category of label/short strings like 'potato' etc
-    return google_reverse(filepath)
+    
+    google_label=google_reverse(filepath)
+    try:
+        os.remove(filepath+'.jpg')
+        print(filepath+' deleted')
+    except Exception:
+        print(filepath+' cannot be deleted because the file no longer exist')
+    return google_label
 
 
 def ingredientsFilter(google_label):
@@ -75,7 +82,14 @@ def google_reverse(filepath):
     driver.implicitly_wait(10)
     driver.find_element_by_xpath("/html/body/div/div[2]/div[2]/form/div[2]/div[1]/div[1]/div/div[3]/div[2]/span").click()
     driver.implicitly_wait(10)
-    driver.find_element_by_xpath("/html/body/div[1]/div[2]/div[2]/div/div[2]/form/div[1]/div/a").click()
+    try:
+        driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[2]/div/div[2]/form/div[1]/div/a").click()
+    except Exception:
+        try:
+            driver.find_element_by_xpath("/html/body/div[1]/div[2]/div[2]/div/div[2]/form/div[1]/div/a").click()
+        #/html/body/div[2]/div[2]/div[2]/div/div[2]/form/div[1]/div/a
+        except Exception:
+            driver.close()
     driver.implicitly_wait(10)
 
     pg.hotkey('tab')
@@ -99,10 +113,6 @@ def google_reverse(filepath):
                 driver.close()
     driver.close()
     return text
-
-
-def start(update,context):
-    update.message.reply_text('Hi,welcome')
     
 def message(update,context):
     print(update.message.text)
@@ -127,7 +137,7 @@ def receive_image(update,context):
     try:
         print('download in progress')
         update.message.reply_text('download in progress')
-        obj=context.bot.getFile(file_id=update.message.document.file_id)
+        obj=context.bot.getFile(file_id=update.message.photo[-1].file_id)
         obj.download()
         update.message.reply_text('file has been downloaded')
         print('file has been downloaded')
@@ -137,28 +147,22 @@ def receive_image(update,context):
         print(google_label)
         update.message.reply_text(google_label)
         tele_ingredients.append(google_label)
-        
+ 
     except Exception as e:
         print(str(e))
         receive_image(update,context)
-    
-def telegramBot():
-    updater=Updater(token='1117701604:AAFffyfiR5PyIZHCtTxDiSPwe87YuO8S3x4',use_context=True)
+
+def telegramBot(TOKEN):
+    updater=Updater(token=TOKEN,use_context=True)
     dp=updater.dispatcher
-    dp.add_handler(CommandHandler('start',start))
     dp.add_handler(MessageHandler(Filters.text,message))
-    dp.add_handler(MessageHandler(Filters.document.jpg,receive_image))
+    dp.add_handler(MessageHandler(Filters.photo,receive_image))
     updater.start_polling()
     updater.idle()
 
+threading.Thread(target=webhook_remover,args=[TOKEN]).start()
+telegramBot(TOKEN)
 
-def command_handling_fn(update,context):
-    context.bot.send_message(chat_id=update.effective_chat.id,text='testing')
 
-def rec_telegramBot():
-    try: 
-        telegramBot()
-    except Exception:
-        rec_telegramBot()
 
-rec_telegramBot()
+
