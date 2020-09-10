@@ -4,6 +4,11 @@ Created on Sun Aug 23 13:08:50 2020
 @author: user
 """
 import time
+# webhook_remover is needed to delete outside webhook from conflicting
+#with the current connection, webhook conflict will occur
+#every 15-30minutes, so i have wrote a library and used threading
+# to delete the webhook every 10 second and use threading module
+# so that it can run concurrently with the code
 from webhook_remover import webhook_remover
 from req_recipe import main # import Jie Shen's req_recipe.py main function
 from telegram.ext import Updater,MessageHandler,Filters
@@ -57,8 +62,8 @@ def file():
     #google_reverse function is a temporary substitute to the model
     #input to it is the newly downloaded image filepath from telegram
     #output is the 25 different category of label/short strings like 'potato' etc
-    
     google_label=google_reverse(filepath)
+    
     try:
         os.remove(filepath+'.jpg')
         print(filepath+' deleted')
