@@ -1,4 +1,4 @@
-  # -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 """
 Created on Sun Aug 23 13:08:50 2020
 @author: user
@@ -12,7 +12,7 @@ import time
 from webhook_remover import webhook_remover
 from req_recipe import main # import Jie Shen's req_recipe.py main function
 from telegram.ext import Updater,MessageHandler,Filters
-import os,pyperclip,threading
+import os,pyperclip,threading,glob
 import pyautogui as pg
 start=time.perf_counter()
 from selenium import webdriver
@@ -46,28 +46,13 @@ a=['steak','steak','salmon','chicken','broccoli','cabbage','carrot'
 tele_ingredients = []
 
 def latestPhotoPath():
-    FILEtime=[]
-    FILE=[]
-    folder=os.listdir(folderpath)
-    i=0
-    while i<len(folder):
-        if folder[i].find('file_')>-1 and folder[i].find('jpg') >-1:
-            filename=folder[i]
-            filepath=folderpath+'/'+filename
-            filepath=filepath.replace('/','\,').replace(',','')
-            FILE.append(filepath)
-            FILEtime.append(float(os.path.getmtime(filepath)))
-        i+=1  
-    i = 0
-    while i < len(FILEtime):
-        if max(FILEtime) == FILEtime[i]:
-            return FILE[i]
-        i += 1
+    list_of_file=glob.iglob(folderpath+'\*.jpg')
+    return max(list_of_file,key=os.path.getctime)
 
 def file():
+    
     filepath=latestPhotoPath()
-  
-  
+    
     #main target of the model function is here
     #google_reverse function is a temporary substitute to the model
     #input to it is the newly downloaded image filepath from telegram
