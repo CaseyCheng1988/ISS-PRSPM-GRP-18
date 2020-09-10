@@ -1,4 +1,5 @@
- """
+  # -*- coding: utf-8 -*-
+"""
 Created on Sun Aug 23 13:08:50 2020
 @author: user
 """
@@ -44,27 +45,37 @@ a=['steak','steak','salmon','chicken','broccoli','cabbage','carrot'
    ]
 tele_ingredients = []
 
-def file():
+def latestPhotoPath():
+    FILEtime=[]
+    FILE=[]
     folder=os.listdir(folderpath)
     i=0
-    FILE=[]
-    #print(folder)
     while i<len(folder):
         if folder[i].find('file_')>-1 and folder[i].find('jpg') >-1:
-            file=int(folder[i].replace('file_','').replace('.jpg',''))
-            FILE.append(file)
-        i+=1
-    filepath=folderpath+'/file_'+str(max(FILE))
-    filepath=filepath.replace('/','\,').replace(',','')
-    
+            filename=folder[i]
+            filepath=folderpath+'/'+filename
+            filepath=filepath.replace('/','\,').replace(',','')
+            FILE.append(filepath)
+            FILEtime.append(float(os.path.getmtime(filepath)))
+        i+=1  
+    i = 0
+    while i < len(FILEtime):
+        if max(FILEtime) == FILEtime[i]:
+            return FILE[i]
+        i += 1
+
+def file():
+    filepath=latestPhotoPath()
+  
+  
     #main target of the model function is here
     #google_reverse function is a temporary substitute to the model
     #input to it is the newly downloaded image filepath from telegram
     #output is the 25 different category of label/short strings like 'potato' etc
     google_label=google_reverse(filepath)
-    
+
     try:
-        os.remove(filepath+'.jpg')
+        os.remove(filepath)
         print(filepath+' deleted')
     except Exception:
         print(filepath+' cannot be deleted because the file no longer exist')
