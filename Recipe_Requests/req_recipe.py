@@ -65,6 +65,17 @@ def getHTMLText(soup, tag, tagClass):
     except:
         return ""
 
+def getYummlyInstructions(url, soup):
+    try:
+        html = soup.find_all("a", class_="read-dir-btn btn-primary wrapper recipe-summary-full-directions p1-text")
+        for line in html:
+            instructions = line.get("href")
+        if instructions == "#directions": instructions = url + instructions
+    except:
+        instructions = ""
+    return instructions
+
+
 def yummlyGetRecipe(url):
     reqs = requests.get(url, headers)
     print(reqs)
@@ -83,6 +94,8 @@ def yummlyGetRecipe(url):
             "Unit": getHTMLText(tag, "span", "unit")
         }
         recipe["Ingredients"].append(ingredient)
+
+    recipe["Instructions"] = getYummlyInstructions(url, soup)
 
     recipe["Link"] = url
 
