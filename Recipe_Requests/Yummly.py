@@ -9,6 +9,8 @@ import json
 
 class Yummly:
 
+    # Yummly class by default will initiate a top 10 relevant search and pull from Yummly
+    # This information can be called from top10Recipes list
     def __init__(self, ingredients):
         self.top10RecipeURLs = []
         self.top10Recipes = []
@@ -24,6 +26,7 @@ class Yummly:
         self.top10RecipeURLs = self._getRecipeURLs(10)[1:]
         self._getTop10Recipe()
 
+    # This function is to generate the scraping URL based on the input ingredients and returning to the request function to scrap information
     def _scrapeURL(self, start, maxResult):
         url_prefix_Yum = r'https://mapi.yummly.com/mapi/v18/content/search?solr.seo_boost=new'
         url_postfix_Yum = f'&ignore-taste-pref%3F=true&start={start}&maxResult={maxResult}&fetchUserCollections=false&allowedContent=single_recipe&allowedContent=suggested_search&allowedContent=related_search&allowedContent=article&allowedContent=video&allowedContent=generic_cta&exp_sspop_enable=true&guided-search=true&solr.view_type=search_internal'
@@ -40,6 +43,9 @@ class Yummly:
 
         return url
 
+    # Actual function to scrap recipe urls from Yummly
+    # Links are generated based from _scrapeURL function
+    # Number of recipes can be searched in multiples of 10
     def _getRecipeURLs(self, num_recipes):
         recipe_links = []
         maxResult = 10
@@ -68,12 +74,14 @@ class Yummly:
 
         return recipe_links
 
+    # Simple scrapping function to full out text from certain tag and class search in bs4
     def _getHTMLText(self, soup, tag, tagClass):
         try:
             return soup.find(tag, class_=tagClass).get_text().replace(u'\xa0', "").rstrip()
         except:
             return ""
 
+    # Search for the buttom in Yummly to find link to recipe instructions
     def _getInstructions(self, url, soup):
         try:
             html = soup.find_all("a", class_="read-dir-btn btn-primary wrapper recipe-summary-full-directions p1-text")
@@ -84,6 +92,9 @@ class Yummly:
             instructions = ""
         return instructions
 
+    # Gets a list of information about the recipe from Yummly
+    # Using bs4 to scrap through the source code for specific terms and HTML tags
+    # This part is catered only to Yummly
     def _getRecipe(self, url):
         reqs = requests.get(url, self.headers)
         print(reqs)
@@ -109,6 +120,7 @@ class Yummly:
 
         return recipe
 
+    # Gets the top 10 recipes based on the URL found
     def _getTop10Recipe(self):
         for link in self.top10RecipeURLs:
             self.top10Recipes.append(self._getRecipe(link))
