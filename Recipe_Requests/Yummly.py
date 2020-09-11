@@ -14,6 +14,7 @@ class Yummly:
     def __init__(self, ingredients):
         self.top10RecipeURLs = []
         self.top10Recipes = []
+        self.top10RecipesName = []
         self.ingredients = ingredients
         self.headers = {
             'Access-Control-Allow-Origin': '*',
@@ -122,12 +123,16 @@ class Yummly:
 
     # Gets the top 10 recipes based on the URL found
     def _getTop10Recipe(self):
+        i = 0
         for link in self.top10RecipeURLs:
             self.top10Recipes.append(self._getRecipe(link))
+            self.top10RecipesName.append(self.top10Recipes[i]["Name"])
+            i = i + 1
 
 if __name__ == '__main__':
     ingredients = ["beef", "orange", "garlic"]
     yum = Yummly(ingredients)
+    print(yum.top10RecipesName)
 
     recipe_filenm = ingredients[0]
     for i in range(1, len(ingredients)):
