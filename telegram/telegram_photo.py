@@ -1,4 +1,4 @@
- # -*- coding: utf-8 -*-
+  # -*- coding: utf-8 -*-
 """
 Created on Sun Aug 23 13:08:50 2020
 @author: user
@@ -10,11 +10,10 @@ import time
 # to delete the webhook every 10 second, threading module is needed
 # so that it can run concurrently with the code
 from webhook_remover import webhook_remover
-from req_recipe import main # import Jie Shen's req_recipe.py main function
+from Yummly import main,getRecipe # import Jie Shen's req_recipe.py main function
 from telegram.ext import Updater,MessageHandler,Filters
 import os,pyperclip,threading,glob
 import pyautogui as pg
-start=time.perf_counter()
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 chromeOptions = webdriver.ChromeOptions()
@@ -44,6 +43,8 @@ a=['steak','steak','salmon','chicken','broccoli','cabbage','carrot'
    ,'mushroom','egg'
    ]
 tele_ingredients = []
+yummly=[]
+userOption=[]
 
 def latestPhotoPath():
     list_of_file=glob.iglob(folderpath+'\*.jpg')
@@ -113,9 +114,40 @@ def google_reverse(filepath):
                 driver.close()
     driver.close()
     return text
-    
+
+def YummlyToString(yummly):
+    i=len(yummly)-1
+    prev_y=''
+    while i>-1:
+        y=str(i+1)+'. '+yummly[i]+'\n'+prev_y
+        prev_y=y
+        i-=1
+    return 'Yummly suggestions:\n'+y
+
+def Yummlymessage(yummly,update):
+    try:
+        if len(yummly)>0:
+            replies=int(update.message.text)
+            if replies>0:
+                RecipeName=yummly[replies-1]
+                return RecipeName
+    except Exception:
+        pass
+
+
 def message(update,context):
+    global yummly,yum,y
+    
+    #below is the detect the integer from user, so that to match the recipe name
+    if Yummlymessage(yummly,update)!=None:
+        userOption.append(Yummlymessage(yummly,update))
+        update.message.reply_text(userOption)
+        print(userOption)
+        update.message.reply_text('Above is the user option\n'+
+            'If decided to pick this recipe, pls reply "chosen yummly" to extract the details.\n'+
+                                  'If got typo or want to clear user option, pls reply "clear user option"')
     print(update.message.text)
+
     #Type 'to yummly' in telegram danielthx account
     #and it will activate yummly function
     if update.message.text.upper().find('TO YUMMLY')>-1:
@@ -126,12 +158,39 @@ def message(update,context):
         #main target for yummly function
         #ingredients list/array to input to yummly main function
         #from yummly, it should output standard strings
-        yummly=main(ingredients)
-        print(yummly)
-        update.message.reply_text(yummly)
+        yummly,yum=main(ingredients)
+        y=YummlyToString(yummly)
+        print(y)
+        update.message.reply_text(y+'\n'+
+                                  'Pls confirm which recipe to pick?'
+                                  +'\n'+
+                                  'For eg, if want recipe 1, pls reply just "1".')
         
         tele_ingredients.clear()
         ingredients.clear()
+        userOption.clear()
+        
+    if update.message.text.upper().find('CHOSEN YUMMLY')>-1:
+        i=0
+        while i<len(userOption):
+            details=getRecipe(yum,userOption[i])
+            print(details)
+            update.message.reply_text(details)
+            i+=1
+            
+    if update.message.text.upper().find('SHOW YUMMLY')>-1:
+        print(y)
+        update.message.reply_text(y)
+        
+    if update.message.text.upper().find('SHOW USER OPTION')>-1:
+        print(userOption)
+        update.message.reply_text(userOption)
+        
+    if update.message.text.upper().find('CLEAR USER OPTION')>-1:
+        print('userOption list cleared')
+        update.message.reply_text('userOption list cleared')
+        userOption.clear()     
+        
 
 def receive_image(update,context):
     try:
@@ -145,7 +204,10 @@ def receive_image(update,context):
      #   print(google_label)
         google_label=ingredientsFilter(google_label)
         print(google_label)
-        update.message.reply_text(google_label)
+        update.message.reply_text(google_label+
+                                  " is added into into ingredients list.\n"+
+                                  "If want to add in more ingredient , pls upload the photo.\n"
+                                  "If ingredients enough, pls reply 'to yummly' once it is confirmed.")
         tele_ingredients.append(google_label)
  
     except Exception as e:
