@@ -4,7 +4,7 @@ Created on Mon Sep 14 20:08:31 2020
 
 @author: user
 """
-import concurrent.futures
+import concurrent.futures,threading,multiprocessing
 import requests, time, os,datetime
 from io import BytesIO
 from PIL import Image
@@ -26,9 +26,10 @@ options.add_argument("--disable-extensions")
 
 excelInputPath="C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/ISS-PRSPM-GRP-18-master/ISS-PRSPM-GRP-18-master/google_scrape/google_scrape_1.xlsx"
 chromedriverPath='C://Users//user//OneDrive - National University of Singapore//IS5002//projects//chromedriver'
-
+TERM=[]
 img_urls=[]
-driver = webdriver.Chrome(chromedriverPath,options=options)
+
+
 # create image directory if not exists
 BASE_DIR = os.path.dirname(os.path.abspath("__file__"))
 
@@ -36,6 +37,7 @@ BASE_DIR = os.path.dirname(os.path.abspath("__file__"))
 #taking user input
 
 def google(SEARCH_TERM):
+    driver = webdriver.Chrome(chromedriverPath,options=options)
     IMG_DIR = os.path.join(BASE_DIR, SEARCH_TERM)
 
     # open log file, or create and open if not exists
@@ -85,13 +87,12 @@ def google(SEARCH_TERM):
     count = 0
     for i in img_tags:
         try:
-            img_urls.append(str(count)+'@@'+SEARCH_TERM+'##'+i['src'])
+            img_urls.append(f"{count}@@{SEARCH_TERM}##{i['src']}")
             count+=1
         except Exception as e:
             pass
-        
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        executor.map(download_image, img_urls)
+
+    driver.close()
 
 def download_image(img_url):
     A=img_url.find('@@')
@@ -109,7 +110,7 @@ def download_image(img_url):
         # get image from response
     img = Image.open(BytesIO(response.content))
         # set image path
-    img_name = SEARCH_TERM+'_'+str(datetime.datetime.now().strftime("%y%m%d%H%M%S"))+'_'+count + '.jpg'
+    img_name = f'{SEARCH_TERM}_{str(datetime.datetime.now().strftime("%y%m%d%H%M%S"))}_{count}.jpg'
     img_path = os.path.join(IMG_DIR, img_name)
         # save image
     img.save(img_path)
@@ -133,12 +134,17 @@ excelread(0)
 ExcelRead=pd.read_excel(excelInputPath)
 
 excel_count=0
+
 while excel_count<len(ExcelRead):
     SEARCH_TERM=str(ExcelRead['SEARCH_TERM'][excel_count])
-    google(SEARCH_TERM)
+    TERM.append(SEARCH_TERM)
     excel_count+=1
-    
-driver.close()
+
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    executor.map(google, TERM)
+        
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    executor.map(download_image, img_urls)
 
 finish=time.perf_counter()
 print(f'\nFinished in {round(finish-start,2)}second(s)')
