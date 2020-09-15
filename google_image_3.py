@@ -4,7 +4,7 @@ Created on Mon Sep 14 20:08:31 2020
 
 @author: user
 """
-import concurrent.futures,threading,multiprocessing
+import concurrent.futures
 import requests, time, os,datetime
 from io import BytesIO
 from PIL import Image
