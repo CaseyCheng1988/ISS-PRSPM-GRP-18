@@ -37,9 +37,9 @@ class Prediction_Model:
 	optmz       = optimizers.RMSprop(lr=learning_rate)
 	num_classes = 10
 
-	def __init__(self):
+	def __init__(self, model_path):
 		Prediction_Model.pred_model = Prediction_Model.createModel()
-
+		Prediction_Model.model_path = model_path
 
 	def createModel():
 	    
@@ -94,7 +94,7 @@ class Prediction_Model:
 	    ARR_img = img_to_array(PIL_img)
 	    ARR_img = np.expand_dims(ARR_img, axis=0)
 	    
-	    Prediction_Model.pred_model.load_weights(modelpath)
+	    Prediction_Model.pred_model.load_weights(Prediction_Model.model_path)
 	    Prediction_Model.pred_model.compile(loss='categorical_crossentropy',
 	        optimizer=Prediction_Model.optmz,
 	        metrics=['categorical_accuracy'])
@@ -114,16 +114,16 @@ if __name__ == "__main__":
 	prediction_folderpath = os.path.join(folderpath, 'pred_to_be_made')
 
 	modelname = 'Food_Classification_Gen10'                                           #Model Name to be loaded
-	modelpath = os.path.join(model_folderpath, modelname+'.hdf5')                     #Model Path to be loaded
-	print(f"Model Path is: {modelpath}")
+	model_path = os.path.join(model_folderpath, modelname+'.hdf5')                     #Model Path to be loaded
+	print(f"Model Path is: {model_path}")
 
 	image_path = os.path.join(prediction_folderpath, 'telegram_image1.jpg')           #Image Path to be predicted
 	print(f"Image Path is: {image_path}")
 
 
 
-	#Step 1: Initalise Prediction_Model Class
-	Pred_Model = Prediction_Model()
+	#Step 1: Initalise Prediction_Model Class with model_path
+	Pred_Model = Prediction_Model(model_path)
 	#Step 2: predict_image by passing in image_path of the image
 	prediction = Pred_Model.predict_image(image_path)
 	print(prediction)
