@@ -120,6 +120,10 @@ if __name__ == "__main__":
 	image_path = os.path.join(prediction_folderpath, 'telegram_image1.jpg')           #Image Path to be predicted
 	print(f"Image Path is: {image_path}")
 
+
+
+	#Step 1: Initalise Prediction_Model Class
 	Pred_Model = Prediction_Model()
+	#Step 2: predict_image by passing in image_path of the image
 	prediction = Pred_Model.predict_image(image_path)
 	print(prediction)
