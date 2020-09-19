@@ -214,7 +214,8 @@ class Yummly:
 
 if __name__ == '__main__':
     ingredients = ["beef"]
-    cuisine = ["american"]
+    cuisine = ""
+    # cuisine = "american"
     yum = Yummly(ingredients, cuisine)
     # recipes = yum._getRecipeList(500)
     recipes = yum.top10Recipes
