@@ -16,7 +16,7 @@ class Yummly:
     def __init__(self, ingredients, cuisine=""):
         self.top10RecipeURLs = []
         self.top10RecipesName = []
-        self.ingredients = ingredients
+        self.ingredients = [item.lower() for item in ingredients]
         self.cuisine = cuisine
         self.headers = {
             'Access-Control-Allow-Origin': '*',
@@ -213,7 +213,7 @@ class Yummly:
 
 
 if __name__ == '__main__':
-    ingredients = ["beef"]
+    ingredients = ["Banana", "Chicken"]
     # cuisine = ""
     # cuisine = "american"
     yum = Yummly(ingredients)

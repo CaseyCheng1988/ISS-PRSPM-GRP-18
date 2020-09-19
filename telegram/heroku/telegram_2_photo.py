@@ -11,8 +11,14 @@ Created on Sun Aug 23 13:08:50 2020
 
 from io import BytesIO
 from Prediction_Model import model
-from Yummly import main,getRecipe # import Jie Shen's req_recipe.py main function
 from telegram.ext import Updater,MessageHandler,Filters
+import os
+import sys
+
+dir_main = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.join(dir_main, "Recipe_Requests"))
+
+import Yummly
 
 TOKEN='1351428540:AAHHYbP6MSUCc47LjKUqkw71IyRKhkUaQ6o'
 
@@ -42,7 +48,7 @@ def Yummlymessage(yummly,update):
 
 def message(update,context):
     global yummly,yum,y
-    
+
     #below is the detect the integer from user, so that to match the recipe name
     if Yummlymessage(yummly,update)!=None:
         userOption.append(Yummlymessage(yummly,update))
@@ -57,50 +63,50 @@ def message(update,context):
     #and it will activate yummly function
     if update.message.text.upper().find('TO YUMMLY')>-1:
         update.message.reply_text('transfering to yummly')
-        ingredients = list(filter(None, tele_ingredients)) 
+        ingredients = list(filter(None, tele_ingredients))
         print(ingredients)
-        
+
         #main target for yummly function
         #ingredients list/array to input to yummly main function
         #from yummly, it should output standard strings
-        yummly,yum=main(ingredients)
-        y=YummlyToString(yummly)
+        yum = Yummly.Yummly(ingredients)
+        y=YummlyToString(yum.top10RecipesName)
         print(y)
         update.message.reply_text(y+'\n'+
                                   'Pls confirm which recipe to pick?'
                                   +'\n'+
                                   'For eg, if want recipe 1, pls reply just "1".')
-        
+
         tele_ingredients.clear()
         ingredients.clear()
         userOption.clear()
-        
+
     if update.message.text.upper().find('CHOSEN YUMMLY')>-1:
         i=0
         while i<len(userOption):
-            details=getRecipe(yum,userOption[i])
+            details=yum._getRecipeText(userOption[i])
             print(details)
             update.message.reply_text(details)
             i+=1
-            
+
     if update.message.text.upper().find('SHOW YUMMLY')>-1:
         print(y)
         update.message.reply_text(y)
-        
+
     if update.message.text.upper().find('SHOW USER OPTION')>-1:
         print(userOption)
         update.message.reply_text(userOption)
-        
+
     if update.message.text.upper().find('CLEAR USER OPTION')>-1:
         print('userOption list cleared')
         update.message.reply_text('userOption list cleared')
-        userOption.clear()     
-       
+        userOption.clear()
+
 def write_bytesio_to_file(filename, bytesio):
     """
     Write the contents of the given BytesIO to a file.
     Creates the file or overwrites the file if it does
-    not exist yet. 
+    not exist yet.
     """
     with open(filename, "wb") as outfile:
         # Copy the BytesIO stream to the output file
@@ -122,7 +128,7 @@ def receive_image(update,context):
                                   "If want to add in more ingredient , pls upload the photo.\n"
                                   "If ingredients enough, pls reply 'to yummly' once it is confirmed.")
         tele_ingredients.append(google_label)
- 
+
     except Exception as e:
         print(str(e))
         receive_image(update,context)
@@ -136,7 +142,3 @@ def telegramBot(TOKEN):
     updater.idle()
 
 telegramBot(TOKEN)
-
-
-
-
