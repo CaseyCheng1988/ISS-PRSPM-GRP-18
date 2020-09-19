@@ -70,7 +70,8 @@ def message(update,context):
         #ingredients list/array to input to yummly main function
         #from yummly, it should output standard strings
         yum = Yummly.Yummly(ingredients)
-        y=YummlyToString(yum.top10RecipesName)
+        yummly = yum.top10RecipesName
+        y=YummlyToString(yummly)
         print(y)
         update.message.reply_text(y+'\n'+
                                   'Pls confirm which recipe to pick?'
