@@ -48,7 +48,7 @@ class Yummly:
             url = url_prefix_Yum
             for i in range(1, num_ingre):
                 url = url + url_add_ingre_Yum + self.ingredients[i]
-            url = url + url_cuisine_Yum + self.cuisine
+            if num_cuisine != 0: url = url + url_cuisine_Yum + self.cuisine
             url = url + url_main_ingre_Yum + self.ingredients[0] + url_postfix_Yum
 
         return url
@@ -214,20 +214,20 @@ class Yummly:
 
 if __name__ == '__main__':
     ingredients = ["beef"]
-    cuisine = ""
+    # cuisine = ""
     # cuisine = "american"
-    yum = Yummly(ingredients, cuisine)
+    yum = Yummly(ingredients)
     # recipes = yum._getRecipeList(500)
     recipes = yum.top10Recipes
     # print(yum.top10RecipesName)
 
-    recipe_filenm = ingredients[0]
-    for i in range(1, len(ingredients)):
-        recipe_filenm = recipe_filenm + "_" + ingredients[i]
-    if not os.path.exists("recipes"): os.makedirs("recipes")
-    recipe_filenm = "recipes/" + recipe_filenm + '_recipes.json'
-    with open(recipe_filenm, 'w', encoding='utf-8') as f:
-        json.dump(recipes, f, ensure_ascii=False, indent=4)
+    # recipe_filenm = ingredients[0]
+    # for i in range(1, len(ingredients)):
+    #     recipe_filenm = recipe_filenm + "_" + ingredients[i]
+    # if not os.path.exists("recipes"): os.makedirs("recipes")
+    # recipe_filenm = "recipes/" + recipe_filenm + '_recipes.json'
+    # with open(recipe_filenm, 'w', encoding='utf-8') as f:
+    #     json.dump(recipes, f, ensure_ascii=False, indent=4)
     print("Number of URLs found from Yummly: " + str(len(recipes)))
 
     for item in yum.top10RecipesName:
