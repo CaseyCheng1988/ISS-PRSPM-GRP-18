@@ -6,15 +6,18 @@ import bs4
 import re
 import time
 import json
+import os
+import sys
 
 class Yummly:
 
     # Yummly class by default will initiate a top 10 relevant search and pull from Yummly
     # This information can be called from top10Recipes list
-    def __init__(self, ingredients):
+    def __init__(self, ingredients, cuisine=""):
         self.top10RecipeURLs = []
         self.top10RecipesName = []
-        self.ingredients = ingredients
+        self.ingredients = [item.lower() for item in ingredients]
+        self.cuisine = cuisine
         self.headers = {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET',
@@ -26,19 +29,26 @@ class Yummly:
         self.top10RecipeURLs = self._getRecipeURLList(self.top10Recipes)
         self.top10RecipesName = self._getRecipeNameList(self.top10Recipes)
 
+    ############################## THIS SECTION IS FOR RETRIEVING RECIPE URLS FROM SEARCH ###################################################
     # This function is to generate the scraping URL based on the input ingredients and returning to the request function to scrap information
-    def _scrapeURL(self, start, maxResult):
+    def _scrapeURL(self, start, maxResult, URLOption):
         url_prefix_Yum = r'https://mapi.yummly.com/mapi/v18/content/search?solr.seo_boost=new'
-        url_postfix_Yum = f'&ignore-taste-pref%3F=true&start={start}&maxResult={maxResult}&fetchUserCollections=false&allowedContent=single_recipe&allowedContent=suggested_search&allowedContent=related_search&allowedContent=article&allowedContent=video&allowedContent=generic_cta&exp_sspop_enable=true&guided-search=true&solr.view_type=search_internal'
+        if URLOption == 0:
+            url_postfix_Yum = f'&ignore-taste-pref%3F=true&start={start}&maxResult={maxResult}&fetchUserCollections=false&allowedContent=single_recipe&allowedContent=suggested_search&allowedContent=related_search&allowedContent=article&allowedContent=video&allowedContent=generic_cta&exp_sspop_enable=true&guided-search=true&solr.view_type=search_internal'
+        else:
+            url_postfix_Yum = f'&ignore-taste-pref%3F=true&start={start}&maxResult={maxResult}&fetchUserCollections=false&allowedContent=single_recipe&allowedContent=suggested_search&allowedContent=related_search&allowedContent=article&allowedContent=video&allowedContent=generic_cta&guided-search=true&solr.view_type=search_internal'
         url_main_ingre_Yum = r'&q='
         url_add_ingre_Yum = r'&allowedIngredient='
+        url_cuisine_Yum = r'&allowedCuisine=cuisine%5Ecuisine-'
         num_ingre = len(self.ingredients)
+        num_cuisine = len(self.cuisine)
         if num_ingre == 0:
             print("No ingredients found")
         else:
             url = url_prefix_Yum
             for i in range(1, num_ingre):
                 url = url + url_add_ingre_Yum + self.ingredients[i]
+            if num_cuisine != 0: url = url + url_cuisine_Yum + self.cuisine
             url = url + url_main_ingre_Yum + self.ingredients[0] + url_postfix_Yum
 
         return url
@@ -47,11 +57,17 @@ class Yummly:
     # Links are generated based from _scrapeURL function
     # Number of recipes can be searched in multiples of 10
     def _getRecipeURLs(self, num_recipes):
+        check = 0
+        recipe_cnt = 0
         recipe_links = []
         maxResult = 10
         i = 2
+        URLOption = 0
         while len(recipe_links) < num_recipes:
-            url = self._scrapeURL(i, maxResult)
+            if check == 2 and URLOption == 0:
+                URLOption = 1
+                check = 0
+            url = self._scrapeURL(i, maxResult, URLOption)
             print(url)
             reqs = requests.get(url, self.headers)
             print(reqs)
@@ -61,7 +77,7 @@ class Yummly:
                     recipe_links.append(link)
                 i = i + maxResult
             else:
-                url = self._scrapeURL(i, int(maxResult/2))
+                url = self._scrapeURL(i, int(maxResult/2), URLOption)
                 print(url)
                 reqs = requests.get(url, self.headers)
                 print(reqs)
@@ -72,8 +88,20 @@ class Yummly:
                 print("Error in site request")
                 break
             recipe_links = list(dict.fromkeys(recipe_links))
+
+            if recipe_cnt == len(recipe_links):
+                check = check + 1
+                if check == 3:
+                    print("No increase in new recipes, exiting loop...")
+                    break
+            else:
+                check = 0
+            recipe_cnt = len(recipe_links)
+            print(recipe_cnt)
         return recipe_links
 
+
+    ############################## THIS SECTION IS FOR RETRIEVING RECIPE DETAILS FROM RECIPE URLS ###################################################
     # Simple scrapping function to full out text from certain tag and class search in bs4
     def _getHTMLText(self, soup, tag, tagClass):
         try:
@@ -128,11 +156,12 @@ class Yummly:
 
         recipe["Instructions"] = self._getInstructions(url, soup)
         recipe["Rating"] = self._getRating(soup)
-
+        recipe["Cuisine"] = self.cuisine
         recipe["Link"] = url
 
         return recipe
 
+    ############################## THIS SECTION IS FOR METHODS TO RETRIEVE INFOMATION FROM RETRIEVED LIST ###################################################
     # Gets the recipes based on the URLs found
     def _getRecipeList(self, numSearch):
         recipeList = []
@@ -184,18 +213,21 @@ class Yummly:
 
 
 if __name__ == '__main__':
-    ingredients = ["beef"]
+    ingredients = ["Banana", "Chicken"]
+    # cuisine = ""
+    # cuisine = "american"
     yum = Yummly(ingredients)
     # recipes = yum._getRecipeList(500)
     recipes = yum.top10Recipes
     # print(yum.top10RecipesName)
 
-    recipe_filenm = ingredients[0]
-    for i in range(1, len(ingredients)):
-        recipe_filenm = recipe_filenm + "_" + ingredients[i]
-    recipe_filenm = recipe_filenm + '_recipes.json'
-    with open(recipe_filenm, 'w', encoding='utf-8') as f:
-        json.dump(recipes, f, ensure_ascii=False, indent=4)
+    # recipe_filenm = ingredients[0]
+    # for i in range(1, len(ingredients)):
+    #     recipe_filenm = recipe_filenm + "_" + ingredients[i]
+    # if not os.path.exists("recipes"): os.makedirs("recipes")
+    # recipe_filenm = "recipes/" + recipe_filenm + '_recipes.json'
+    # with open(recipe_filenm, 'w', encoding='utf-8') as f:
+    #     json.dump(recipes, f, ensure_ascii=False, indent=4)
     print("Number of URLs found from Yummly: " + str(len(recipes)))
 
     for item in yum.top10RecipesName:
