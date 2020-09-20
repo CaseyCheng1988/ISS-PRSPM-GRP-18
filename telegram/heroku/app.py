@@ -1,3 +1,7 @@
+###########################################################
+#YUMMLY FUNCTION
+###########################################################
+
 # req_recipe scrapes links from website's search function and scraps out recipe details from recipe websites
 # Yummly seem to have a max of 500 recipes per search
 
@@ -232,9 +236,12 @@ def main(ingredients):
 def getRecipe(yum,chosenRecipe):
     #yum = Yummly(ingredients)
     return yum._getRecipeText(chosenRecipe)
-   
+  
+###########################################################
+#MODEL FUNCTION
+###########################################################  
+  
 import numpy as np
-
 from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.models import Model
@@ -342,7 +349,7 @@ class Prediction_Model:
 
 
 def model():
-	import os, pathlib
+	import os
 	folderpath = os.path.abspath(os.getcwd())
 	model_folderpath = os.path.join(folderpath, 'model')
 	prediction_folderpath = os.path.join(folderpath)
@@ -363,29 +370,21 @@ def model():
     
 	return Pred_Model.predict_image(image_path)
      
-	#print(prediction)
+
     
- # -*- coding: utf-8 -*-
-"""
-Created on Sun Aug 23 13:08:50 2020
-@author: user
-"""
-# webhook_remover is needed to delete outside webhook from conflicting
-#with the current connection, webhook conflict will occur every 15-30minutes
-#so i have wrote a library called webhook_remover and used threading
-# to delete the webhook every 10 second, threading module is needed
-# so that it can run concurrently with the code
+###########################################################
+#TELEGRAM FUNCTION
+###########################################################
 
 from io import BytesIO
 #from Prediction_Model import model
 from telegram.ext import Updater,MessageHandler,Filters
 
 
-
-
 TOKEN='1239312494:AAGXEt22xKY9pF3DEyHrfG4nUGBsS4CXoHk'
 
 tele_ingredients = []
+ingredients=[]
 yummly=[]
 userOption=[]
 
@@ -396,7 +395,10 @@ def YummlyToString(yummly):
         y=str(i+1)+'. '+yummly[i]+'\n'+prev_y
         prev_y=y
         i-=1
-    return 'Yummly suggestions:\n'+y
+        y=('Yummly suggestions:\n'+
+            y+'\n'+'Pls confirm which recipe to pick?'
+            +'\n'+'For eg, if want recipe 1, pls reply just "1".')
+    return y
 
 def Yummlymessage(yummly,update):
     try:
@@ -408,27 +410,7 @@ def Yummlymessage(yummly,update):
     except Exception:
         pass
 
-
-def message(update,context):
-    global yummly,yum,y
-
-    #below is the detect the integer from user, so that to match the recipe name
-    if Yummlymessage(yummly,update)!=None:
-        userOption.append(Yummlymessage(yummly,update))
-        update.message.reply_text(userOption)
-        print(userOption)
-        update.message.reply_text('Above is the user option\n'+
-            'If decided to pick this recipe, pls reply "chosen yummly" to extract the details.\n'+
-                                  'If got typo or want to clear user option, pls reply "clear user option"')
-    print(update.message.text)
-
-    #Type 'to yummly' in telegram danielthx account
-    #and it will activate yummly function
-    if update.message.text.upper().find('TO YUMMLY')>-1:
-        update.message.reply_text('transfering to yummly')
-        #ingredients=tele_ingredients.copy()
-        ingredients = list(filter(None, tele_ingredients))
-        print(ingredients)
+def yummlyTransfer(ingredients,update):
         #main target for yummly function
         #ingredients list/array to input to yummly main function
         #from yummly, it should output standard strings
@@ -437,26 +419,16 @@ def message(update,context):
             y=YummlyToString(yummly)
             print(y)
         
-            update.message.reply_text(y+'\n'+
-                                  'Pls confirm which recipe to pick?'
-                                  +'\n'+
-                                  'For eg, if want recipe 1, pls reply just "1".')
+            update.message.reply_text(y)
         except Exception:
             y="don't have such combination/recipe"
-            print(y)
-            update.message.reply_text(y)
 
         tele_ingredients.clear()
         ingredients.clear()
         userOption.clear()
-
-    if update.message.text.upper().find('CHOSEN YUMMLY')>-1:
-        i=0
-        while i<len(userOption):
-            details=getRecipe(yum,userOption[i])
-            print(details)
-            update.message.reply_text(details)
-            i+=1
+        return y,yummly,yum
+    
+def YummlyuserView(y,update):
 
     if update.message.text.upper().find('SHOW YUMMLY')>-1:
         print(y)
@@ -470,6 +442,70 @@ def message(update,context):
         print('userOption list cleared')
         update.message.reply_text('userOption list cleared')
         userOption.clear()
+    
+
+def message(update,context):
+    global yummly,yum,y
+
+    #below is the detect the integer from user, so that to match the recipe name
+    if Yummlymessage(yummly,update)!=None:
+        userOption.append(Yummlymessage(yummly,update))
+        update.message.reply_text(userOption)
+        print(userOption)
+        update.message.reply_text('Above is the user option\n'+
+            'If decided to pick this recipe, pls reply "chosen yummly" to extract the details.\n'+
+                                  'If got typo or want to clear user option, pls reply "clear user option"')
+    print(update.message.text)
+    
+    if update.message.text.upper().find('CHOSEN YUMMLY')>-1:
+        if userOption==[]:
+            print("there is nothing inside user option list")
+            update.message.reply_text("there is nothing inside user option list")
+        i=0
+        while i<len(userOption):
+            details=getRecipe(yum,userOption[i])
+            print(details)
+            update.message.reply_text(details)
+            i+=1    
+    #Type 'to yummly' in telegram danielthx account
+    #and it will activate yummly function
+    if update.message.text.upper().find('TO YUMMLY')>-1:
+        update.message.reply_text('transfering to yummly')
+        ingredients = list(filter(None, tele_ingredients))
+        print(ingredients)
+        try:
+            if ingredients!=[]:
+                y,yummly,yum=yummlyTransfer(ingredients,update)
+
+            elif y=="don't have such combination/recipe":
+                print(y)
+                update.message.reply_text(y)
+            
+            elif y.find('Yummly suggestions')>-1:
+                temp="ingredients has been transferred to yummly, now pls type 'show yummly'."
+                print(temp)
+                update.message.reply_text(temp)
+        except Exception:
+            if ingredients==[]:
+                y="ingredient is not added in , pls send ingredients photo here"
+                print(y)
+                update.message.reply_text(y)
+            else:
+                pass
+    
+    try:
+        if y.find('Yummly suggestions')>-1:
+            YummlyuserView(y,update)
+        else:
+            print(y)
+            update.message.reply_text(y)
+    except Exception:
+        if ingredients==[]:
+            y="ingredient is not added in , pls send ingredients photo here"
+            print(y)
+            update.message.reply_text(y)
+        else:
+            pass
 
 def write_bytesio_to_file(filename, bytesio):
     """
@@ -511,4 +547,3 @@ def telegramBot(TOKEN):
     updater.idle()
 
 telegramBot(TOKEN)
-
