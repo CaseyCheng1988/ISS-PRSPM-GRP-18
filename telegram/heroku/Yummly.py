@@ -4,10 +4,6 @@
 import requests
 import bs4
 import re
-import time
-import json
-import os
-import sys
 
 class Yummly:
 
@@ -16,7 +12,7 @@ class Yummly:
     def __init__(self, ingredients, cuisine=""):
         self.top10RecipeURLs = []
         self.top10RecipesName = []
-        self.ingredients = ingredients
+        self.ingredients = [item.lower() for item in ingredients]
         self.cuisine = cuisine
         self.headers = {
             'Access-Control-Allow-Origin': '*',
@@ -216,6 +212,7 @@ def main(ingredients):
     #ingredients = ["beef"]
     # cuisine = ""
     # cuisine = "american"
+    
     yum = Yummly(ingredients)
     # recipes = yum._getRecipeList(500)
     recipes = yum.top10Recipes
