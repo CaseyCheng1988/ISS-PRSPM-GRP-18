@@ -377,16 +377,13 @@ def model():
 ###########################################################
 
 from io import BytesIO
-#from Prediction_Model import model
 from telegram.ext import Updater,MessageHandler,Filters
-
 
 TOKEN='1239312494:AAGXEt22xKY9pF3DEyHrfG4nUGBsS4CXoHk'
 
 tele_ingredients = []
 ingredients=[]
 yummly=[]
-userOption=[]
 
 def YummlyToString(yummly):
     i=len(yummly)-1
@@ -425,51 +422,32 @@ def yummlyTransfer(ingredients,update):
 
         tele_ingredients.clear()
         ingredients.clear()
-        userOption.clear()
         return y,yummly,yum
     
 def YummlyuserView(y,update):
 
-    if update.message.text.upper().find('SHOW YUMMLY')>-1:
+    if update.message.text.upper().find('YUMMLY')>-1:
         print(y)
         update.message.reply_text(y)
-
-    if update.message.text.upper().find('SHOW USER OPTION')>-1:
-        print(userOption)
-        update.message.reply_text(userOption)
-
-    if update.message.text.upper().find('CLEAR USER OPTION')>-1:
-        print('userOption list cleared')
-        update.message.reply_text('userOption list cleared')
-        userOption.clear()
     
+    if update.message.text.upper().find('HELP')>-1:
+        instruction=("reply 'yummly' is to get show all the suggested top 10 recipes from Yummly"+'\n\n'
+              +"reply 'done' is to retrieve the recipes from yummly")
+        print(instruction)
+        update.message.reply_text(instruction)
 
 def message(update,context):
-    global yummly,yum,y
+    global yummly,yum,y,ingredients
 
     #below is the detect the integer from user, so that to match the recipe name
     if Yummlymessage(yummly,update)!=None:
-        userOption.append(Yummlymessage(yummly,update))
-        update.message.reply_text(userOption)
-        print(userOption)
-        update.message.reply_text('Above is the user option\n'+
-            'If decided to pick this recipe, pls reply "chosen yummly" to extract the details.\n'+
-                                  'If got typo or want to clear user option, pls reply "clear user option"')
-    print(update.message.text)
-    
-    if update.message.text.upper().find('CHOSEN YUMMLY')>-1:
-        if userOption==[]:
-            print("there is nothing inside user option list")
-            update.message.reply_text("there is nothing inside user option list")
-        i=0
-        while i<len(userOption):
-            details=getRecipe(yum,userOption[i])
-            print(details)
-            update.message.reply_text(details)
-            i+=1    
+        details=getRecipe(yum,Yummlymessage(yummly,update))
+        print(details)
+        update.message.reply_text(details)
+  
     #Type 'to yummly' in telegram danielthx account
     #and it will activate yummly function
-    if update.message.text.upper().find('TO YUMMLY')>-1:
+    if update.message.text.upper().find('DONE')>-1:
         update.message.reply_text('transfering to yummly')
         ingredients = list(filter(None, tele_ingredients))
         print(ingredients)
@@ -482,7 +460,7 @@ def message(update,context):
                 update.message.reply_text(y)
             
             elif y.find('Yummly suggestions')>-1:
-                temp="ingredients has been transferred to yummly, now pls type 'show yummly'."
+                temp="ingredients has been transferred to yummly, now pls type 'yummly'."
                 print(temp)
                 update.message.reply_text(temp)
         except Exception:
@@ -531,7 +509,7 @@ def receive_image(update,context):
         update.message.reply_text(google_label+
                                   " is added into into ingredients list.\n"+
                                   "If want to add in more ingredient , pls upload the photo.\n"
-                                  "If ingredients enough, pls reply 'to yummly' once it is confirmed.")
+                                  "If ingredients enough, pls reply 'done' once it is confirmed.")
         tele_ingredients.append(google_label)
 
     except Exception as e:
