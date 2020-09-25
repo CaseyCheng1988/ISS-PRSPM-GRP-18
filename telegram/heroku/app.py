@@ -5,10 +5,8 @@
 # req_recipe scrapes links from website's search function and scraps out recipe details from recipe websites
 # Yummly seem to have a max of 500 recipes per search
 
-import requests
-import bs4
-import re
-
+import requests,concurrent.futures,bs4,re
+recipeList = []
 class Yummly:
 
     # Yummly class by default will initiate a top 10 relevant search and pull from Yummly
@@ -159,18 +157,17 @@ class Yummly:
         recipe["Cuisine"] = self.cuisine
         recipe["Link"] = url
 
-        return recipe
+        recipeList.append(recipe)
 
     ############################## THIS SECTION IS FOR METHODS TO RETRIEVE INFOMATION FROM RETRIEVED LIST ###################################################
     # Gets the recipes based on the URLs found
     def _getRecipeList(self, numSearch):
-        recipeList = []
-        recipeURLs = self._getRecipeURLs(numSearch)[1:]
-        i = 1
-        for link in recipeURLs:
-            print("Extracting recipe from Link " + str(i) + " out of " + str(len(recipeURLs)))
-            recipeList.append(self._getRecipe(link))
-            i = i + 1
+        
+        recipeURLs = self._getRecipeURLs(numSearch)[1:]    
+        #####multithreading from recipeURLs list##################
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            executor.map(self._getRecipe, recipeURLs)
+
         return recipeList
 
     def _getRecipeNameList(self, recipeList):
@@ -448,6 +445,7 @@ def message(update,context):
     #Type 'to yummly' in telegram danielthx account
     #and it will activate yummly function
     if update.message.text.upper().find('DONE')>-1:
+        
         update.message.reply_text('transfering to yummly')
         ingredients = list(filter(None, tele_ingredients))
         print(ingredients)
@@ -497,6 +495,7 @@ def write_bytesio_to_file(filename, bytesio):
 
 def receive_image(update,context):
     try:
+        recipeList.clear()
         print('download in progress')
         update.message.reply_text('download in progress')
         obj=context.bot.getFile(file_id=update.message.photo[-1].file_id)
