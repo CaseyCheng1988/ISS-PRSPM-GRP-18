@@ -403,11 +403,12 @@ def IngredientsToString(ingredients):
         prev_y=y
         i-=1
         y=("ingredients list:\n"+
-            y+"\nIn case this ingredient is wrong, pls type the respective numbers."+
-            "\n\n*Like for eg, ingredients number 1 is wrong, just type 'del 1' to delete number 1 ingredient"+ 
-            "\n*Type 'edit 1,banana' to swap the respective ingredients"+
-            "\n*If manually input is needed, like for eg; want to add in banana, just press 'add banana' "
-            +"\n***If ingredients enough, pls reply 'done' once it is confirmed."
+            y+"\nIn case this ingredient is wrong, pls type the command along with the respective ingredients list number."+
+            "\n\n*Like for eg,if ingredients number 1 is wrong, just type 'del 1' to delete number 1 ingredient"+ 
+            "\n*Like for eg, if ingredients number 1 is wrong want to swap it with banana, just type 'edit 1,banana' to swap the respective ingredients"+
+            "\n*If manual input is needed, like for eg; want to add in banana, just press 'add banana' "
+            +"\n\n***If ingredients list is correct and enough, pls reply 'done' once it is confirmed."+
+            '\n***If ingredients list is not enough, pls continue to upload the photos'
            )
     return y
 
@@ -544,7 +545,7 @@ def message(update,context):
     if update.message.text.upper().find('HELP')>-1:
         instruction=("*reply 'recipe' is to get show all the suggested top 10 recipes from Yummly"+
               "\n*reply 'done' is to retrieve the recipes from yummly"+
-              "\n*reply for eg 'edit 1,banana' will swap the ingredients item with banana"+
+              "\n*reply for eg 'edit 1,banana' will swap the ingredients item number 1 with banana"+
               "\n*reply for eg 'add banana' will just add the ingredients list with banana"+
               "\n*reply for eg 'del 1' will just delete the ingredients item number 1 in ingredients list"
               )    
@@ -602,7 +603,6 @@ def telegramBot(TOKEN):
     dp.add_handler(MessageHandler(Filters.text,message))
     dp.add_handler(MessageHandler(Filters.photo,receive_image))
     updater.start_polling()
-
     updater.idle()
 
 
