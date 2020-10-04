@@ -374,11 +374,12 @@ def model():
 ###########################################################
 
 from io import BytesIO
-from telegram.ext import Updater,MessageHandler,Filters
-
+from telegram.ext import Updater, CommandHandler, MessageHandler,Filters, InlineQueryHandler
+#from telegram.ext import Updater,MessageHandler,Filters
+from telegram.ext.dispatcher import run_async
+import time,threading,multiprocessing
+#from webhook_remover import webhook_remover
 TOKEN='1239312494:AAGXEt22xKY9pF3DEyHrfG4nUGBsS4CXoHk'
-
-tele_ingredients = []
 ingredients=[]
 yummly=[]
 
@@ -392,6 +393,22 @@ def YummlyToString(yummly):
         y=('Yummly suggestions:\n'+
             y+'\n'+'Pls confirm which recipe to pick?'
             +'\n'+'For eg, if want recipe 1, pls reply just "1".')
+    return y
+
+def IngredientsToString(ingredients):
+    i=len(ingredients)-1
+    prev_y=''
+    while i>-1:
+        y=str(i+1)+'. '+ingredients[i]+'\n'+prev_y
+        prev_y=y
+        i-=1
+        y=("ingredients list:\n"+
+            y+"\nIn case this ingredient is wrong, pls type the respective numbers."+
+            "\n\n*Like for eg, ingredients number 1 is wrong, just type 'del 1' to delete number 1 ingredient"+ 
+            "\n*Type 'edit 1,banana' to swap the respective ingredients"+
+            "\n*If manually input is needed, like for eg; want to add in banana, just press 'add banana' "
+            +"\n***If ingredients enough, pls reply 'done' once it is confirmed."
+           )
     return y
 
 def Yummlymessage(yummly,update):
@@ -409,56 +426,103 @@ def yummlyTransfer(ingredients,update):
         #ingredients list/array to input to yummly main function
         #from yummly, it should output standard strings
         yummly,yum = main(ingredients)
-        try:
-            y=YummlyToString(yummly)
-            print(y)
-        
-            update.message.reply_text(y)
-        except Exception:
-            y="don't have such combination/recipe"
+        string=convert_list_to_string(ingredients,',')
+        print(yummly)
+        if yummly!=[] and yummly[0]!='':
+                print(yummly)
+                y=YummlyToString(yummly)
+                print(y)
+                update.message.reply_text(y)
+                ingredients.clear()
 
-        tele_ingredients.clear()
-        ingredients.clear()
+        elif yummly==[] or yummly[0]=='':
+            update.message.reply_text("don't have such combination/recipe for "+string)
+            remove_ingredients=ingredients[len(ingredients)-1]
+            
+            update.message.reply_text('due to invalid combination,'+remove_ingredients+' is removed.')
+            ingredients.remove(remove_ingredients)
+            y,yummly,yum=yummlyTransfer(ingredients,update)
+
+                    
         return y,yummly,yum
-    
-def YummlyuserView(y,update):
 
-    if update.message.text.upper().find('YUMMLY')>-1:
-        print(y)
-        update.message.reply_text(y)
-    
-    if update.message.text.upper().find('HELP')>-1:
-        instruction=("reply 'yummly' is to get show all the suggested top 10 recipes from Yummly"+'\n\n'
-              +"reply 'done' is to retrieve the recipes from yummly")
-        print(instruction)
-        update.message.reply_text(instruction)
+def delete(i,ingredient_num):
+    if len(ingredients)!=0:
+        try:
+            i+=1
+            return ingredients[ingredient_num-i]
+        except Exception:
+            delete(i,ingredient_num)
+    elif y.find('Yummly suggestions')==-1:
+        return "ingredient is not added in , pls send ingredients photo here"
 
 def message(update,context):
-    global yummly,yum,y,ingredients
+    global yummly,yum,y,ingredients,manual
 
     #below is the detect the integer from user, so that to match the recipe name
     if Yummlymessage(yummly,update)!=None:
         details=getRecipe(yum,Yummlymessage(yummly,update))
         print(details)
         update.message.reply_text(details)
-  
+    
+    if update.message.text.upper().find('DEL')>-1:
+        
+        ingredient_num=int(update.message.text.upper().replace('DEL',''))
+        print(ingredient_num)
+        temp=delete(0,ingredient_num)
+        print(temp)
+        update.message.reply_text(temp+' is removed')
+        ingredients.remove(temp)
+        print(ingredients)
+        try:
+            ingredients_string=IngredientsToString(ingredients)
+            update.message.reply_text(ingredients_string)
+        except Exception:
+            pass
+
+    if update.message.text.upper().find('EDIT')>-1:
+            manual=str(update.message.text)
+            first=manual.split(',')[0]
+            second=manual.split(',')[1]
+            ingredient_num=int(first.upper().replace('EDIT',''))
+            print(manual)
+            
+            print(ingredient_num)
+            temp=delete(0,ingredient_num)
+            print(temp)
+            update.message.reply_text(temp+' is removed')
+            ingredients.remove(temp)
+            ingredients.append(second.lower().replace(' ',''))
+            print(ingredients)
+            try:
+                ingredients_string=IngredientsToString(ingredients)
+                update.message.reply_text(ingredients_string)
+            except Exception:
+                pass
+            
+    if update.message.text.upper().find('ADD')>-1:
+            temp=update.message.text.upper().replace('ADD','').replace(' ','')
+            ingredients.append(temp.lower())
+        
+            try:
+                ingredients_string=IngredientsToString(ingredients)
+                update.message.reply_text(ingredients_string)
+            except Exception:
+                pass    
+    
     #Type 'to yummly' in telegram danielthx account
     #and it will activate yummly function
     if update.message.text.upper().find('DONE')>-1:
-        
         update.message.reply_text('transfering to yummly')
-        ingredients = list(filter(None, tele_ingredients))
-        print(ingredients)
+        if recipeList!=[]:
+            recipeList.clear()
+        
         try:
             if ingredients!=[]:
                 y,yummly,yum=yummlyTransfer(ingredients,update)
-
-            elif y=="don't have such combination/recipe":
-                print(y)
-                update.message.reply_text(y)
             
             elif y.find('Yummly suggestions')>-1:
-                temp="ingredients has been transferred to yummly, now pls type 'yummly'."
+                temp="ingredients has been transferred to yummly, now pls type 'recipe'."
                 print(temp)
                 update.message.reply_text(temp)
         except Exception:
@@ -468,20 +532,29 @@ def message(update,context):
                 update.message.reply_text(y)
             else:
                 pass
-    
     try:
-        if y.find('Yummly suggestions')>-1:
-            YummlyuserView(y,update)
-        else:
+        if update.message.text.upper().find('RECIPE')>-1:
             print(y)
             update.message.reply_text(y)
     except Exception:
-        if ingredients==[]:
-            y="ingredient is not added in , pls send ingredients photo here"
-            print(y)
-            update.message.reply_text(y)
-        else:
-            pass
+        print('no recipe yet')
+        update.message.reply_text('no recipe yet')
+
+    
+    if update.message.text.upper().find('HELP')>-1:
+        instruction=("*reply 'recipe' is to get show all the suggested top 10 recipes from Yummly"+
+              "\n*reply 'done' is to retrieve the recipes from yummly"+
+              "\n*reply for eg 'edit 1,banana' will swap the ingredients item with banana"+
+              "\n*reply for eg 'add banana' will just add the ingredients list with banana"+
+              "\n*reply for eg 'del 1' will just delete the ingredients item number 1 in ingredients list"
+              )    
+        print(instruction)
+        update.message.reply_text(instruction)
+
+def convert_list_to_string(org_list, seperator=' '):
+    """ Convert list to string, by joining all item in list with given separator.
+        Returns the concatenated string """
+    return seperator.join(org_list)
 
 def write_bytesio_to_file(filename, bytesio):
     """
@@ -494,26 +567,34 @@ def write_bytesio_to_file(filename, bytesio):
         outfile.write(bytesio.getbuffer())
 
 def receive_image(update,context):
+
+    global ingredients,string
     try:
+        update.message.reply_text("wait ah, it's still downloading")
         recipeList.clear()
-        print('download in progress')
-        update.message.reply_text('download in progress')
         obj=context.bot.getFile(file_id=update.message.photo[-1].file_id)
         f =  BytesIO(obj.download_as_bytearray())
         write_bytesio_to_file('telegram_image.jpg', f)
-        update.message.reply_text('file has been downloaded')
-        print('file has been downloaded')
-        google_label=model()
+
+        google_label=model().lower()
         print(google_label)
-        update.message.reply_text(google_label+
-                                  " is added into into ingredients list.\n"+
+        if google_label not in ingredients:
+            ingredients.append(google_label)
+        string=convert_list_to_string(ingredients,',')
+        print(ingredients)
+
+
+        update.message.reply_text(string+
+                                  " are in ingredients list.\n"+
                                   "If want to add in more ingredient , pls upload the photo.\n"
-                                  "If ingredients enough, pls reply 'done' once it is confirmed.")
-        tele_ingredients.append(google_label)
+                                  )
+        ingredients_string=IngredientsToString(ingredients)
+        update.message.reply_text(ingredients_string)
 
     except Exception as e:
         print(str(e))
-        receive_image(update,context)
+        receive_image(update,context)  
+
 
 def telegramBot(TOKEN):
     updater=Updater(token=TOKEN,use_context=True)
@@ -521,6 +602,8 @@ def telegramBot(TOKEN):
     dp.add_handler(MessageHandler(Filters.text,message))
     dp.add_handler(MessageHandler(Filters.photo,receive_image))
     updater.start_polling()
+
     updater.idle()
+
 
 telegramBot(TOKEN)
