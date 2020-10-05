@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Sep 14 20:08:31 2020
-
 @author: user
 """
 import concurrent.futures
@@ -58,7 +57,8 @@ def google(SEARCH_TERM):
         
         try:
             #click see more
-            driver.find_element_by_xpath("/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div[1]/div[3]/div[3]/c-wiz/div/div/div/div[2]/a").click()
+            driver.find_element_by_xpath("/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div[1]/div[3]/div[4]/c-wiz/div/div/div[1]/div[2]/a").click()
+            #/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div[1]/div[3]/div[4]/c-wiz/div/div/div[1]/div[2]/a
             break
         #to deal with google licensed photo,if don't have click see more, it will go back and proceed with the next picture
         except Exception:
