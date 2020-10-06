@@ -24,6 +24,9 @@ class Yummly:
         self.top10RecipeURLs = self._getRecipeURLList(self.top10Recipes)
         self.top10RecipesName = self._getRecipeNameList(self.top10Recipes)
 
+        self.selectedRecipeName = ""
+        self.recommendedIngred = ""
+
     ############################## THIS SECTION IS FOR RETRIEVING RECIPE URLS FROM SEARCH ###################################################
     # This function is to generate the scraping URL based on the input ingredients and returning to the request function to scrap information
     def _scrapeURL(self, start, maxResult, URLOption):
@@ -94,7 +97,7 @@ class Yummly:
             recipe_cnt = len(recipe_links)
             print(recipe_cnt)
         return recipe_links
-    
+
     ############################## THIS SECTION IS FOR RETRIEVING RECIPE DETAILS FROM RECIPE URLS ###################################################
     # Simple scrapping function to full out text from certain tag and class search in bs4
     def _getHTMLText(self, soup, tag, tagClass):
@@ -158,8 +161,8 @@ class Yummly:
     ############################## THIS SECTION IS FOR METHODS TO RETRIEVE INFOMATION FROM RETRIEVED LIST ###################################################
     # Gets the recipes based on the URLs found
     def _getRecipeList(self, numSearch):
-        
-        recipeURLs = self._getRecipeURLs(numSearch)[1:]    
+
+        recipeURLs = self._getRecipeURLs(numSearch)[1:]
         #####multithreading from recipeURLs list#####################
         with concurrent.futures.ThreadPoolExecutor() as executor:
             executor.map(self._getRecipe, recipeURLs)
@@ -188,6 +191,10 @@ class Yummly:
         else:
             return amount + " " + unit + " of " + ingredient
 
+    # Runs prediction model to predict the additional ingredient to recommend
+    def _recommendIngred(self):
+        self.recommendedIngred = "xxxxxx"
+
     # Extract and form text of ingredients and instructions link based on input recipe name
     def _getRecipeText(self, recipeName, recipeList = []):
         if len(recipeList) == 0: recipeList = self.top10Recipes
@@ -201,8 +208,16 @@ class Yummly:
                     text = text + "\n" + str(num) + ". " + self._getIngredient(item)
                     num = num + 1
                 text = text + "\nCooking Instructions: " + recipe["Link"]
+
+                self.selectedRecipeName = recipeName
+                self._recommendIngred()
                 return text
         return "Unable to find recipe name."
+
+    # Returns the recommended additional ingredient to be added
+    def _getRecommendedIngred(self):
+        return self.recommendedIngred
+
 
 if __name__ == '__main__':
     ingredients = ["Banana", "Chicken",'Potato']
@@ -227,4 +242,5 @@ if __name__ == '__main__':
     finish=time.perf_counter()
     chosenRecipe = input("Please choose recipe from above list: ")
     print(yum._getRecipeText(chosenRecipe))
+    print(yum._getRecommendedIngred())
     print(f'Finished in {round(finish-start,2)}second(s)')
