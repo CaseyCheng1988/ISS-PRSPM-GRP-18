@@ -196,6 +196,7 @@ class Yummly:
         self.recommendedIngred = "xxxxxx"
 
     # Extract and form text of ingredients and instructions link based on input recipe name
+    # Includes the running of the prediction function to generate the additional ingredient
     def _getRecipeText(self, recipeName, recipeList = []):
         if len(recipeList) == 0: recipeList = self.top10Recipes
         text = ""
