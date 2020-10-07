@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Sep 14 20:08:31 2020
+
 @author: user
 """
 import concurrent.futures
@@ -22,6 +23,7 @@ options.add_argument('--no-sandbox') # Bypass OS security model
 options.add_argument('start-maximized') # 
 options.add_argument('disable-infobars')
 options.add_argument("--disable-extensions")
+options.add_argument("--disable-extensions")
 
 excelInputPath="C:/Users/user/OneDrive - National University of Singapore/IS5002/projects/ISS-PRSPM-GRP-18-master/ISS-PRSPM-GRP-18-master/google_scrape/google_scrape_1.xlsx"
 chromedriverPath='C://Users//user//OneDrive - National University of Singapore//IS5002//projects//chromedriver'
@@ -36,6 +38,8 @@ BASE_DIR = os.path.dirname(os.path.abspath("__file__"))
 #taking user input
 
 def google(SEARCH_TERM):
+    #display=Display(visible=0,size=(800,600))
+    #display.start()
     driver = webdriver.Chrome(chromedriverPath,options=options)
     IMG_DIR = os.path.join(BASE_DIR, SEARCH_TERM)
 
@@ -94,6 +98,7 @@ def google(SEARCH_TERM):
 
     driver.close()
 
+
 def download_image(img_url):
     A=img_url.find('@@')
     B=img_url.find('##')
@@ -116,7 +121,7 @@ def download_image(img_url):
     img.save(img_path)
     print("Saving image as {}".format(img_path))
     log_file.write("[INFO] Saving image at {}\n".format(img_path))
-    print("Number of images downloaded = "+count+' '+SEARCH_TERM,end='\r')        
+   # print("Number of images downloaded = "+count+' '+SEARCH_TERM,end='\r')        
     
 
 def excelread(wait):
@@ -148,3 +153,5 @@ with concurrent.futures.ThreadPoolExecutor() as executor:
 
 finish=time.perf_counter()
 print(f'\nFinished in {round(finish-start,2)}second(s)')
+
+
