@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import os
 
 from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.preprocessing.image import img_to_array
@@ -20,22 +21,40 @@ from tensorflow.keras import regularizers
 class Prediction_Model:
 
 	CONST = {'IMG_HEIGHT' : 256,
-	         'IMG_WIDTH'  : 256}
+	         'IMG_WIDTH'  : 256,
+	         'THRESHOLD'  : 0.0,
+			 "NONE" 	  : 'None'}
 
-	CLASS_LABELS = {0 : 'Apple',
-	                1 : 'Avocado',
-	                2 : 'Banana',
-	                3 : 'BeanSprout',
-	                4 : 'Broccoli',
-	                5 : 'Chicken',
-	                6 : 'GreenBean',
-	                7 : 'Potato',
-	                8 : 'Salmon',
-	                9 : 'Tomato'}
+	CLASS_LABELS = 	{0 : 'Apple',
+					 1 :'Avocado', 
+					 2 : 'Banana',
+					 3 : 'BeanSprout',
+					 4 : 'Bread',
+					 5 : 'Broccoli',
+					 6 : 'Cabbage',
+					 7 : 'Carrot',
+					 8 : 'Celery',
+					 9 : 'Cheese',
+					 10: 'Chicken',
+					 11: 'Corn',
+					 12: 'Cucumber',
+					 13: 'Egg',
+					 14: 'Eggplant',
+					 15: 'GreenBean',
+					 16: 'Lemon',
+					 17: 'Mushroom',
+					 18: 'Olive',
+					 19: 'Onion',
+					 20: 'Potato',
+					 21: 'Salmon',
+					 22: 'Spinach',
+					 23: 'Steak',
+					 24: 'Tomato'}
+
 
 	learning_rate = 0.0005
 	optmz       = optimizers.RMSprop(lr=learning_rate)
-	num_classes = 10
+	num_classes = 25
 
 	def __init__(self, model_path):
 		Prediction_Model.pred_model = Prediction_Model.createModel()
@@ -50,7 +69,6 @@ class Prediction_Model:
 	    x = Activation('relu') (x)
 
 	    x = MaxPooling2D(pool_size=(2,2)) (x)
-
 	    x = Conv2D(32,(3,3),activation=None, padding='same')(x)
 	    x = BatchNormalization() (x)
 	    x = Activation('relu') (x)
@@ -101,8 +119,12 @@ class Prediction_Model:
 
 
 	    predicts    = Prediction_Model.pred_model.predict(ARR_img)
-	    predout     = Prediction_Model.CLASS_LABELS[int(np.argmax(predicts, axis=1))]
-	    
+	    #print (predicts)
+	    print (max(predicts[0]))
+	    if max(predicts[0]) >= Prediction_Model.CONST['THRESHOLD']:
+	    	predout = Prediction_Model.CLASS_LABELS[int(np.argmax(predicts, axis=1))]
+	    else:
+	    	predout = Prediction_Model.CONST['NONE']
 	    return predout
 
 
@@ -113,17 +135,20 @@ if __name__ == "__main__":
 	model_folderpath = os.path.join(folderpath, 'model')
 	prediction_folderpath = os.path.join(folderpath, 'pred_to_be_made')
 
-	modelname = 'Food_Classification_Gen10'                                           #Model Name to be loaded
-	model_path = os.path.join(model_folderpath, modelname+'.hdf5')                     #Model Path to be loaded
+	modelname = 'Food_Classification_Gen25'                                           	#Model Name to be loaded
+	model_path = os.path.join(model_folderpath, modelname+'.hdf5')                     	#Model Path to be loaded
 	print(f"Model Path is: {model_path}")
 
-	image_path = os.path.join(prediction_folderpath, 'telegram_image1.jpg')           #Image Path to be predicted
-	print(f"Image Path is: {image_path}")
+	#image_path = os.path.join(prediction_folderpath, 'telegram_image1.jpg')           	#Image Path to be predicted
+	#print(f"Image Path is: {image_path}")
 
 
 
 	#Step 1: Initalise Prediction_Model Class with model_path
 	Pred_Model = Prediction_Model(model_path)
 	#Step 2: predict_image by passing in image_path of the image
-	prediction = Pred_Model.predict_image(image_path)
-	print(prediction)
+	for image in os.listdir(prediction_folderpath):
+		image_path = os.path.join(prediction_folderpath, image)
+		print(f"Image Path is: {image_path}")
+		prediction = Pred_Model.predict_image(image_path)
+		print(prediction)
