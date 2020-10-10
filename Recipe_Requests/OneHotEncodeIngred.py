@@ -28,7 +28,7 @@ class OneHotEncodeIngred:
             print("Unable to find indicated encoder maps... Exiting...")
             sys.exit()
         else:
-            print("Encoder maps detected... Going into encode mode...")
+            print("Encoder maps detected! Going into encode mode...")
             self.label_encoder = pickle.load(open(label_encoder, 'rb'))
             self.onehot_encoder = pickle.load(open(onehot_encoder, 'rb'))
 
@@ -103,7 +103,7 @@ class OneHotEncodeIngred:
 
         self._saveIngredDecode()
 
-    ################## Functions to One Hot encode recipes ###################
+    ################## Functions to One Hot encode recipes ###############################
     def _transform_value(self, s):
         l = np.array([s])
         integer_encoded = self.label_encoder.transform(l)
