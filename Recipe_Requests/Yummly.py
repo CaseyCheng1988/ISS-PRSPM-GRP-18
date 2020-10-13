@@ -36,6 +36,10 @@ class Yummly:
         self.selectedRecipeName = ""
         self.recommendedIngred = ""
 
+        self.LABEL_ENCODER = "label_encoder.pkl"
+        self.ONEHOT_ENCODER = "onehot_encoder.pkl"
+        self.MODEL_PATH = os.path.join(dir_main, "ProjectModel_Ingredients", "codefull.hdf5")
+
     ############################## THIS SECTION IS FOR RETRIEVING RECIPE URLS FROM SEARCH ###################################################
     # This function is to generate the scraping URL based on the input ingredients and returning to the request function to scrap information
     def _scrapeURL(self, start, maxResult, URLOption):
@@ -202,13 +206,9 @@ class Yummly:
 
     # Runs prediction model to predict the additional ingredient to recommend
     def _recommendIngred(self):
-        LABEL_ENCODER = "label_encoder.pkl"
-        ONEHOT_ENCODER = "onehot_encoder.pkl"
-        MODEL_PATH = os.path.join(dir_main, "ProjectModel_Ingredients", "codefull.hdf5")
-
         mapIng = MapIngred.MapIngred()
-        encoder = OHEIngred.OneHotEncodeIngred(label_encoder = LABEL_ENCODER, onehot_encoder = ONEHOT_ENCODER)
-        predictor = IngrePredict.IngrePredict(model_path = MODEL_PATH)
+        encoder = OHEIngred.OneHotEncodeIngred(label_encoder = self.LABEL_ENCODER, onehot_encoder = self.ONEHOT_ENCODER)
+        predictor = IngrePredict.IngrePredict(model_path = self.MODEL_PATH)
 
         recipeList = self.top10Recipes
         recipeName = self.selectedRecipeName
