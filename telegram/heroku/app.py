@@ -4,7 +4,8 @@
 # Map ingredients from specific names to categories that was manually labelled
 import pandas as pd
 import json,gc
-
+requestSuggestion=[]
+z=[]
 class MapIngred:
 
     def __init__(self):
@@ -165,6 +166,9 @@ class OneHotEncodeIngred:
 
     def _encodeRecipe(self, recipe):
         ingred_list = self._getIngreds(recipe)
+        
+        ingred_list.extend(requestSuggestion)
+        print(ingred_list)
         transformed_list = []
         for item in ingred_list:
             transformed_list.append(self._transform_value(item))
@@ -514,12 +518,12 @@ class Yummly:
                 text = text + "\nCooking Instructions: " + recipe["Link"]
 
                 self.selectedRecipeName = recipeName
-                self._recommendIngred()
                 return text
         return "Unable to find recipe name."
 
     # Returns the recommended additional ingredient to be added
     def _getRecommendedIngred(self):
+        self._recommendIngred()
         return self.recommendedIngred
 
 
@@ -548,10 +552,13 @@ def main(ingredients):
 
     
 def getRecipe(yum,chosenRecipe):
-    #yum = Yummly(ingredients)
+    requestSuggestion.clear()
     details=yum._getRecipeText(chosenRecipe)
+    return details
+
+def getRecommend(yum):
     suggestion=yum._getRecommendedIngred()
-    return details,suggestion
+    return suggestion
   
 ###########################################################
 #MODEL FUNCTION
@@ -723,7 +730,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler,Filters, Inline
 from telegram.ext.dispatcher import run_async
 import time,threading,multiprocessing
 #from webhook_remover import webhook_remover
-TOKEN='1209854585:AAHC9A4awhi0lqjYnI7r_qkEyctq_p2xyAQ'
+TOKEN='1191987017:AAFoH1SGpTXABUcs9O1H4rpjUdCGjuYUBOM'
 ingredients=[]
 yummly=[]
 
@@ -807,19 +814,46 @@ def delete(i,ingredient_num):
 def message(update,context):
     #gc.enable()
     gc.collect()
-    global yummly,yum,y,ingredients,manual
-
+    global yummly,yum,y,ingredients,manual,suggestion,RecipeName,sug_string,z
+    
+    if update.message.text.upper().find('EXTEND')>-1 and len(z)>0:
+        update.message.reply_text('Pls wait ah!, we will suggest more to you shortly')
+        user=update.message.text.lower().replace('extend','')
+        try:
+            if user[0]==' ':
+                user=user[1:]
+        except Exception:
+            pass
+        if user!='':
+            requestSuggestion.append(user)
+        try:
+            suggestion=getRecommend(yum)
+            requestSuggestion.append(suggestion)
+            print(requestSuggestion)
+            sug_string=convert_list_to_string(requestSuggestion,',') 
+            print('we suggest you add '+sug_string+ ' to make it more tasty.')
+            update.message.reply_text('we suggest you add '+sug_string+' to make it more tasty.')
+        except Exception:
+            update.message.reply_text(user+' is not a valid ingredient to add')
+            requestSuggestion.remove(user)
+            
+    elif update.message.text.upper().find('EXTEND')>-1 and len(z)==0:
+        update.message.reply_text('what to extend ah! invalid command')
+        
     #below is the detect the integer from user, so that to match the recipe name
     if Yummlymessage(yummly,update)!=None:
+        if z==[]:
+            z.append('1')
         update.message.reply_text('retrieving recipe!Please wait ah')
-        details,suggestion=getRecipe(yum,Yummlymessage(yummly,update))
+        RecipeName=Yummlymessage(yummly,update)
+        details=getRecipe(yum,RecipeName)
         print(details)
-        print('we suggest you add '+suggestion+' to make it more tasty.')
+        #print('we suggest you add '+suggestion+' to make it more tasty.')
         update.message.reply_text(details)
-        update.message.reply_text('we suggest you add '+suggestion+' to make it more tasty.')
+        #update.message.reply_text('we suggest you add '+suggestion+' to make it more tasty.')
     
     if update.message.text.upper().find('DEL')>-1:
-        
+        z.clear()
         ingredient_num=int(update.message.text.upper().replace('DEL',''))
         print(ingredient_num)
         temp=delete(0,ingredient_num)
@@ -829,12 +863,14 @@ def message(update,context):
         print(ingredients)
         try:
             ingredients_string=IngredientsToString(ingredients)
+            print(ingredients_string)
             update.message.reply_text(ingredients_string)
         except Exception:
             pass
         del ingredient_num,temp
 
     if update.message.text.upper().find('EDIT')>-1:
+            z.clear()
             manual=str(update.message.text)
             first=manual.split(',')[0]
             second=manual.split(',')[1]
@@ -858,6 +894,7 @@ def message(update,context):
             del temp,first,second,ingredient_num
             
     if update.message.text.upper().find('ADD')>-1:
+            z.clear()
             temp=update.message.text.upper().replace('ADD','').replace(' ','')
             if temp!='':
                 ingredients.append(temp.lower())
@@ -872,6 +909,7 @@ def message(update,context):
     #Type 'to yummly' in telegram danielthx account
     #and it will activate yummly function
     if update.message.text.upper().find('DONE')>-1:
+        z.clear()
         update.message.reply_text('transfering to yummly')
         
         try:
@@ -905,6 +943,7 @@ def message(update,context):
               "\n*reply for eg 'edit 1,banana' will swap the ingredients item number 1 with banana"+
               "\n*reply for eg 'add banana' will just add the ingredients list with banana"+
               "\n*reply for eg 'del 1' will just delete the ingredients item number 1 in ingredients list"
+              "\n*reply 'extend' is to extend the suggestion from ingredient suggestor"
               )    
         print(instruction)
         update.message.reply_text(instruction)
@@ -925,6 +964,7 @@ def write_bytesio_to_file(filename, bytesio):
         outfile.write(bytesio.getbuffer())
 
 def receive_image(update,context):
+    z.clear()
     #gc.enable()
     gc.collect()
     global ingredients,string
