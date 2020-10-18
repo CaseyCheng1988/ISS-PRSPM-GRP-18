@@ -11,7 +11,7 @@ class MapIngred:
     # Function to get the ingedient map and load into the class
     def _getIngredMap(self):
         self.map = pd.read_excel(self.ingredMap_filename, index_col=0)
-        print(self.map)
+        # print(self.map)
 
     # Does the actual mapping of ingredient based on category in "General Category" column
     def _mapIngredient(self, ingredient):

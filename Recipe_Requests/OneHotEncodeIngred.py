@@ -10,16 +10,13 @@ import sys
 
 class OneHotEncodeIngred:
 
+    # Class initializer. There are 2 modes: Training & Encode/Decode. Mode depends on whether user inputs paths to encoder
     def __init__(self, label_encoder = None, onehot_encoder = None):
         if label_encoder == None or onehot_encoder == None:
             print("No encoder maps detected... Going into training mode...")
             self.recipesTrain_filename = "recipes_mapped.json"
 
             self.ingredients = set()
-            self.recipes_ingred_list = []
-            self.prep_time_list = []
-            self.rating_list = []
-            self.cuisine_list = []
 
             self._loadTrainData()
             self._extractInfo()
@@ -28,7 +25,7 @@ class OneHotEncodeIngred:
             print("Unable to find indicated encoder maps... Exiting...")
             sys.exit()
         else:
-            print("Encoder maps detected! Going into encode mode...")
+            print("Encoder maps detected! Going into encode decode mode...")
             self.label_encoder = pickle.load(open(label_encoder, 'rb'))
             self.onehot_encoder = pickle.load(open(onehot_encoder, 'rb'))
 
@@ -65,7 +62,6 @@ class OneHotEncodeIngred:
     def _extractInfo(self):
         for recipe in self.recipesTrain:
             ingred_list = self._getIngreds(recipe)
-            self.recipes_ingred_list.append(ingred_list)
             for ingred in ingred_list:
                 if ingred == None: print(recipe["Name"])
                 self.ingredients.add(ingred)
@@ -122,35 +118,52 @@ class OneHotEncodeIngred:
         for array in transformed_list: results = np.logical_or(results, array)
         return results
 
+    ########################## Decoding function back to ingred ##########################
+    def _decodeIngred(self, array):
+        array = [array]
+        integer_encoded = self.onehot_encoder.inverse_transform(array)
+        integer_encoded = integer_encoded.reshape(1, len(integer_encoded))
+        print(integer_encoded)
+        ingred = self.label_encoder.inverse_transform(integer_encoded.ravel())
 
+        return ingred[0]
 
 
 if __name__ == '__main__':
-    recipeList_filename = "recipes_mapped.json"
+    ########################## Training and encode code #############################
+    # recipeList_filename = "recipes_mapped.json"
+    #
+    # with open(recipeList_filename, 'r', encoding='utf-8') as f:
+    #     recipeList = json.load(f)
 
-    with open(recipeList_filename, 'r', encoding='utf-8') as f:
-        recipeList = json.load(f)
+    # encoder = OneHotEncodeIngred()
 
-    encoder = OneHotEncodeIngred()
+    # recipes_ingred_list_vec = []
+    # prep_time_list = []
+    # rating_list = []
+    # cuisine_list = []
+    # counter = 1
+    # for recipe in recipeList:
+    #     print("Working on recipe #" + str(counter))
+    #     results = encoder._encodeRecipe(recipe)
+    #     recipes_ingred_list_vec.append(results.astype(np.int))
+    #
+    #     prep_time_list.append(encoder._getPrepTime(recipe))
+    #     rating_list.append(encoder._getRating(recipe))
+    #     cuisine_list.append(encoder._getCuisine(recipe))
+    #     counter = counter + 1
+    #
+    # recipes_encoded_df = pd.DataFrame(recipes_ingred_list_vec)
+    # recipes_encoded_df["prep time"] = prep_time_list
+    # recipes_encoded_df["rating"] = rating_list
+    # recipes_encoded_df["cuisine"] = cuisine_list
+    # print(recipes_encoded_df.shape)
+    # recipes_encoded_df.to_csv("recipes_mapped_encoded.csv")
 
-    recipes_ingred_list_vec = []
-    prep_time_list = []
-    rating_list = []
-    cuisine_list = []
-    counter = 1
-    for recipe in recipeList:
-        print("Working on recipe #" + str(counter))
-        results = encoder._encodeRecipe(recipe)
-        recipes_ingred_list_vec.append(results.astype(np.int))
 
-        prep_time_list.append(encoder._getPrepTime(recipe))
-        rating_list.append(encoder._getRating(recipe))
-        cuisine_list.append(encoder._getCuisine(recipe))
-        counter = counter + 1
+    ################################## Decode code ##################################
+    encoder = OneHotEncodeIngred("label_encoder.pkl", "onehot_encoder.pkl")
 
-    recipes_encoded_df = pd.DataFrame(recipes_ingred_list_vec)
-    recipes_encoded_df["prep time"] = prep_time_list
-    recipes_encoded_df["rating"] = rating_list
-    recipes_encoded_df["cuisine"] = cuisine_list
-    print(recipes_encoded_df.shape)
-    recipes_encoded_df.to_csv("recipes_mapped_encoded.csv")
+    ingred_list = pd.read_csv("recipes_output.csv", index_col = 0)
+    print(ingred_list.iloc[3].values)
+    print(encoder._decodeIngred(ingred_list.iloc[3].values))

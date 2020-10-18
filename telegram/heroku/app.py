@@ -1,14 +1,279 @@
-###########################################################
-#YUMMLY FUNCTION
-###########################################################
+######################################
+#MapIngred
+######################################
+# Map ingredients from specific names to categories that was manually labelled
+import pandas as pd
+import json,gc
+
+class MapIngred:
+
+    def __init__(self):
+        self.ingredMap_filename = "ingred_decode_label.xlsx"
+        self._getIngredMap()
+        gc.collect()
+
+    # Function to get the ingedient map and load into the class
+    def _getIngredMap(self):
+        self.map = pd.read_excel(self.ingredMap_filename, index_col=0)
+        gc.collect()
+        # print(self.map)
+
+    # Does the actual mapping of ingredient based on category in "General Category" column
+    def _mapIngredient(self, ingredient):
+        try:
+            label = self.map.loc[self.map["Ingredients"] == ingredient, "General Category"].iloc[0]
+        except:
+            label = ""
+        gc.collect()
+        return label
+
+    # Inputs a recipe and returns a recipe with mapped ingredients
+    def _mapRecipeIngred(self, recipe):
+        temp_ingred = []
+        for item in recipe["Ingredients"]:
+            mapped_ingred = self._mapIngredient(item["Ingredient"])
+            if mapped_ingred == "" or pd.isna(mapped_ingred):
+                gc.collect()
+                continue
+            else:
+                item["Ingredient"] = mapped_ingred
+                temp_ingred.append(item)
+        gc.collect()
+        return temp_ingred
 
 # req_recipe scrapes links from website's search function and scraps out recipe details from recipe websites
 # Yummly seem to have a max of 500 recipes per search
+#####################################################
+#OneHotEncode
+###################################################
+# One Hot encoding script for ingredients
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import OneHotEncoder
+import numpy as np
+import json
+import pandas as pd
+import pickle
+import os
+import sys
 
-import requests,concurrent.futures,bs4,re
+class OneHotEncodeIngred:
+    #gc.enable()
+    gc.collect()
+    # Class initializer. There are 2 modes: Training & Encode/Decode. Mode depends on whether user inputs paths to encoder
+    def __init__(self, label_encoder = None, onehot_encoder = None):
+        if label_encoder == None or onehot_encoder == None:
+            print("No encoder maps detected... Going into training mode...")
+            self.recipesTrain_filename = "recipes_mapped.json"
+
+            self.ingredients = set()
+
+            self._loadTrainData()
+            self._extractInfo()
+            self._oneHotEncodeTrain()
+            gc.collect()
+        elif not os.path.isfile(label_encoder) or not os.path.isfile(onehot_encoder):
+            print("Unable to find indicated encoder maps... Exiting...")
+            sys.exit()
+            gc.collect()
+        else:
+            print("Encoder maps detected! Going into encode decode mode...")
+            self.label_encoder = pickle.load(open(label_encoder, 'rb'))
+            self.onehot_encoder = pickle.load(open(onehot_encoder, 'rb'))
+            gc.collect()
+
+
+
+    ################## Generic Functions to Extract Info from Recipes ###################
+    def _getIngreds(self, recipe):
+        return [item["Ingredient"] for item in recipe["Ingredients"]]
+        gc.collect()
+
+    def _getPrepTime(self, recipe):
+        prep_time = recipe["CookingTime"]["Value"]
+        prep_time_unit = recipe["CookingTime"]["Unit"]
+        if prep_time != "":
+            if prep_time_unit == "Seconds":
+                prep_time = int(prep_time) / 60
+            elif prep_time_unit == "Hours":
+                prep_time = int(prep_time) * 60
+            else:
+                prep_time = int(prep_time)
+        return prep_time
+
+    def _getRating(self, recipe):
+        return recipe["Rating"]
+
+    def _getCuisine(self, recipe):
+        return recipe["Cuisine"]
+
+
+    ################## Functions to Generate Map for One Hot Encoding ###################
+    def _loadTrainData(self):
+        with open(self.recipesTrain_filename, 'r', encoding='utf-8') as f:
+            self.recipesTrain = json.load(f)
+
+    def _extractInfo(self):
+        for recipe in self.recipesTrain:
+            ingred_list = self._getIngreds(recipe)
+            for ingred in ingred_list:
+                if ingred == None: print(recipe["Name"])
+                self.ingredients.add(ingred)
+                gc.collect()
+
+        self.ingredients = list(self.ingredients)
+
+        # print(len(self.ingredients))
+        # print(self.ingredients[0:10])
+        self.ingredients.sort()
+        # print(len(self.ingredients))
+        # print(self.ingredients[0:10])
+
+    def _saveIngredDecode(self):
+        ingred_df = pd.DataFrame(self.ingredients)
+        ingred_df.to_csv("ingred_decode.csv")
+        gc.collect()
+
+    def _oneHotEncodeTrain(self):
+        values = np.array(self.ingredients)
+        self.label_encoder = LabelEncoder()
+
+        #gives a unique int value for each string ingredient, and saves the #mapping. you need that for the encoder. something like:
+        #['banana'] -> [1]
+        integer_encoded = self.label_encoder.fit_transform(values)
+        print(integer_encoded)
+
+        self.onehot_encoder = OneHotEncoder(sparse=False)
+        integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
+        print(integer_encoded)
+        #here you encode something like : [2] -> [0,1,0,0,...]
+        onehot_encoded = self.onehot_encoder.fit_transform(integer_encoded)
+        print(onehot_encoded)
+
+        pickle.dump(self.label_encoder, open('label_encoder.pkl', 'wb'))
+        pickle.dump(self.onehot_encoder, open('onehot_encoder.pkl', 'wb'))
+
+        self._saveIngredDecode()
+
+    ################## Functions to One Hot encode recipes ###############################
+    def _transform_value(self, s):
+        l = np.array([s])
+        integer_encoded = self.label_encoder.transform(l)
+        integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
+        onehot_encoded = self.onehot_encoder.transform(integer_encoded)
+
+        return onehot_encoded[0]
+
+    def _encodeRecipe(self, recipe):
+        ingred_list = self._getIngreds(recipe)
+        transformed_list = []
+        for item in ingred_list:
+            transformed_list.append(self._transform_value(item))
+
+        results = transformed_list[0]
+        for array in transformed_list: results = np.logical_or(results, array)
+        gc.collect()
+        return results
+
+    ########################## Decoding function back to ingred ##########################
+    def _decodeIngred(self, array):
+        array = [array]
+        integer_encoded = self.onehot_encoder.inverse_transform(array)
+        integer_encoded = integer_encoded.reshape(1, len(integer_encoded))
+        print(integer_encoded)
+        ingred = self.label_encoder.inverse_transform(integer_encoded.ravel())
+
+        return ingred[0]
+
+#############################################
+#IngrePredict
+#########################################
+from tensorflow.keras.models import load_model
+import numpy as np
+#gc.enable()
+gc.collect()
+class IngrePredict:
+    def __init__(self, model_path=None, inputs=None):
+        if model_path is not None:
+            self.model_path = model_path
+        else:
+            self.model_path = None
+
+        if inputs is not None:
+            self.inputs = self._correct_inputs_dim(inputs)
+            self.num_classes = self.inputs.shape[1]
+        else:
+            self.inputs = None
+            self.num_classes = None
+
+    def _correct_inputs_dim(self, inputs):
+        # make sure inputs array is 2-dimensional:
+        if inputs.ndim == 1:
+            inputs = np.reshape(inputs, (1, -1))
+        elif (inputs.ndim < 1) or (inputs.ndim > 2):
+            raise Exception('Inputs array must be either one or two-dimensional array.')
+        return inputs
+
+    def _set_modelpath(self, model_path):
+        self.model_path = model_path
+
+    def _set_inputs(self, inputs):
+        self.inputs = self._correct_inputs_dim(inputs)
+        self.num_classes = self.inputs.shape[1]
+
+    def _check_num_classes(self, model, inputs):
+        if model.input.shape.as_list()[1] == inputs.shape[1]:
+            return True
+        else:
+            return False
+
+    def _one_hot_encode(self, predicted_class):
+        row = len(predicted_class)
+        one_hot_prediction = np.zeros((row, self.num_classes), dtype=np.int8)
+        for i in range(len(predicted_class)):
+            one_hot_prediction[i, predicted_class[i]] = 1
+        gc.collect()
+        return one_hot_prediction
+
+
+    def _predict_inputs(self, model_path=None, inputs=None):
+        if model_path is not None:
+            print('I am here 1')
+            self._set_modelpath(self, model_path)
+
+        if inputs is not None:
+            print('I am here 2')
+            self._set_inputs(inputs)
+
+        if self.inputs is None:
+            raise Exception("Inputs array is missing for prediction.")
+
+        if self.model_path is None:
+            raise Exception("Model is missing for prediction.")
+
+        model = load_model(self.model_path)
+        if not (self._check_num_classes(model, self.inputs)):
+            raise Exception("Total classes of inputs array does not tally with model input dimension.")
+
+        predict_probability = model.predict(self.inputs)
+        predict_class = np.argmax(predict_probability, axis=1)
+        return self._one_hot_encode(predict_class)
+
+
+import requests,bs4,re,time,os,sys
+
+dir_main = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(dir_main, "ProjectModel_Ingredients"))
+
+#import MapIngred
+#import OneHotEncodeIngred as OHEIngred
+#import IngrePredict
+
+start=time.perf_counter()
 recipeList = []
-class Yummly:
 
+class Yummly:
+    #gc.enable()
+    gc.collect()
     # Yummly class by default will initiate a top 10 relevant search and pull from Yummly
     # This information can be called from top10Recipes list
     def __init__(self, ingredients, cuisine=""):
@@ -26,6 +291,9 @@ class Yummly:
         self.top10Recipes = self._getRecipeList(10)
         self.top10RecipeURLs = self._getRecipeURLList(self.top10Recipes)
         self.top10RecipesName = self._getRecipeNameList(self.top10Recipes)
+
+        self.selectedRecipeName = ""
+        self.recommendedIngred = ""
 
     ############################## THIS SECTION IS FOR RETRIEVING RECIPE URLS FROM SEARCH ###################################################
     # This function is to generate the scraping URL based on the input ingredients and returning to the request function to scrap information
@@ -96,8 +364,8 @@ class Yummly:
                 check = 0
             recipe_cnt = len(recipe_links)
             print(recipe_cnt)
+        gc.collect()
         return recipe_links
-
 
     ############################## THIS SECTION IS FOR RETRIEVING RECIPE DETAILS FROM RECIPE URLS ###################################################
     # Simple scrapping function to full out text from certain tag and class search in bs4
@@ -157,17 +425,17 @@ class Yummly:
         recipe["Cuisine"] = self.cuisine
         recipe["Link"] = url
 
-        recipeList.append(recipe)
+        return recipe
 
-    ############################## THIS SECTION IS FOR METHODS TO RETRIEVE INFOMATION FROM RETRIEVED LIST ###################################################
     # Gets the recipes based on the URLs found
     def _getRecipeList(self, numSearch):
-        
-        recipeURLs = self._getRecipeURLs(numSearch)[1:]    
-        #####multithreading from recipeURLs list##################
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            executor.map(self._getRecipe, recipeURLs)
-
+        recipeList = []
+        recipeURLs = self._getRecipeURLs(numSearch)[1:]
+        i = 1
+        for link in recipeURLs:
+            print("Extracting recipe from Link " + str(i) + " out of " + str(len(recipeURLs)))
+            recipeList.append(self._getRecipe(link))
+            i = i + 1
         return recipeList
 
     def _getRecipeNameList(self, recipeList):
@@ -192,7 +460,46 @@ class Yummly:
         else:
             return amount + " " + unit + " of " + ingredient
 
+    # Runs prediction model to predict the additional ingredient to recommend
+    def _recommendIngred(self):
+        folderpath = os.path.abspath(os.getcwd())
+        LABEL_ENCODER = "label_encoder.pkl"
+        ONEHOT_ENCODER = "onehot_encoder.pkl"
+        model_folderpath = os.path.join(folderpath, 'ProjectModel_Ingredients')
+        modelname = 'codefull'                                           #Model Name to be loaded
+
+        MODEL_PATH = os.path.join(model_folderpath, modelname+'.hdf5')  
+
+        mapIng = MapIngred()
+        encoder = OneHotEncodeIngred(label_encoder = LABEL_ENCODER, onehot_encoder = ONEHOT_ENCODER)
+        predictor = IngrePredict(model_path = MODEL_PATH)
+
+        recipeList = self.top10Recipes
+        recipeName = self.selectedRecipeName
+
+        for recipe in recipeList:
+            if recipe["Name"] == recipeName:
+                print("Mapping ingredients into broader categories for prediction...")
+                
+                recipe["Ingredients"] = mapIng._mapRecipeIngred(recipe)
+                print(mapIng._mapRecipeIngred(recipe))
+                #A=recipe["Ingredients"].copy
+                #print(A)
+                print("Converting ingredient list to one hot encoded vector...")
+                #print(recipe)
+                recipeIngred_encode = encoder._encodeRecipe(recipe)
+                #print(recipeIngred_encode)
+                print("Prediction ongoing...")
+                predicted_class = predictor._predict_inputs(inputs = recipeIngred_encode)[0]
+                print("Mapping prediction to ingredient class...")
+                recommendIngred = encoder._decodeIngred(predicted_class)
+                print("Predicted ingredient: " + recommendIngred)
+                break
+        self.recommendedIngred = recommendIngred
+        gc.collect()
+
     # Extract and form text of ingredients and instructions link based on input recipe name
+    # Includes the running of the prediction function to generate the additional ingredient
     def _getRecipeText(self, recipeName, recipeList = []):
         if len(recipeList) == 0: recipeList = self.top10Recipes
         text = ""
@@ -205,11 +512,21 @@ class Yummly:
                     text = text + "\n" + str(num) + ". " + self._getIngredient(item)
                     num = num + 1
                 text = text + "\nCooking Instructions: " + recipe["Link"]
+
+                self.selectedRecipeName = recipeName
+                self._recommendIngred()
                 return text
         return "Unable to find recipe name."
 
+    # Returns the recommended additional ingredient to be added
+    def _getRecommendedIngred(self):
+        return self.recommendedIngred
+
 
 def main(ingredients):
+    recipeList.clear()
+    #gc.enable()
+    gc.collect()
     #ingredients = ["beef"]
     # cuisine = ""
     # cuisine = "american"
@@ -232,13 +549,16 @@ def main(ingredients):
     
 def getRecipe(yum,chosenRecipe):
     #yum = Yummly(ingredients)
-    return yum._getRecipeText(chosenRecipe)
+    details=yum._getRecipeText(chosenRecipe)
+    suggestion=yum._getRecommendedIngred()
+    return details,suggestion
   
 ###########################################################
 #MODEL FUNCTION
 ###########################################################  
   
 import numpy as np
+import gc
 from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.models import Model
@@ -253,27 +573,46 @@ from tensorflow.keras.layers import Activation
 from tensorflow.keras.layers.experimental.preprocessing import Rescaling
 from tensorflow.keras import optimizers
 from tensorflow.keras import regularizers
-
+#gc.enable()
+gc.collect()
 
 class Prediction_Model:
 
 	CONST = {'IMG_HEIGHT' : 256,
-	         'IMG_WIDTH'  : 256}
+	         'IMG_WIDTH'  : 256,
+	         'THRESHOLD'  : 0.5,
+			 "NONE" 	  : 'None'}
 
-	CLASS_LABELS = {0 : 'Apple',
-	                1 : 'Avocado',
-	                2 : 'Banana',
-	                3 : 'BeanSprout',
-	                4 : 'Broccoli',
-	                5 : 'Chicken',
-	                6 : 'GreenBean',
-	                7 : 'Potato',
-	                8 : 'Salmon',
-	                9 : 'Tomato'}
+	CLASS_LABELS = 	{0 : 'Apple',
+					 1 : 'Avocado', 
+					 2 : 'Banana',
+					 3 : 'BeanSprout',
+					 4 : 'Beef',
+					 5 : 'Bread',
+					 6 : 'Broccoli',
+					 7 : 'Cabbage',
+					 8 : 'Carrot',
+					 9 : 'Celery',
+					 10: 'Cheese',
+					 11: 'Chicken',
+					 12: 'Corn',
+					 13: 'Cucumber',
+					 14: 'Egg',
+					 15: 'Eggplant',
+					 16: 'GreenBean',
+					 17: 'Lemon',
+					 18: 'Mushroom',
+					 19: 'Olive',
+					 20: 'Onion',
+					 21: 'Potato',
+					 22: 'Salmon',
+					 23: 'Spinach',
+					 24: 'Tomato'}
+
 
 	learning_rate = 0.0005
 	optmz       = optimizers.RMSprop(lr=learning_rate)
-	num_classes = 10
+	num_classes = 25
 
 	def __init__(self, model_path):
 		Prediction_Model.pred_model = Prediction_Model.createModel()
@@ -288,7 +627,6 @@ class Prediction_Model:
 	    x = Activation('relu') (x)
 
 	    x = MaxPooling2D(pool_size=(2,2)) (x)
-
 	    x = Conv2D(32,(3,3),activation=None, padding='same')(x)
 	    x = BatchNormalization() (x)
 	    x = Activation('relu') (x)
@@ -339,19 +677,24 @@ class Prediction_Model:
 
 
 	    predicts    = Prediction_Model.pred_model.predict(ARR_img)
-	    predout     = Prediction_Model.CLASS_LABELS[int(np.argmax(predicts, axis=1))]
-	    
+	    #print (predicts)
+	    print (max(predicts[0]))
+	    if max(predicts[0]) >= Prediction_Model.CONST['THRESHOLD']:
+	    	predout = Prediction_Model.CLASS_LABELS[int(np.argmax(predicts, axis=1))]
+	    else:
+	    	predout = Prediction_Model.CONST['NONE']
 	    return predout
 
 
 
 def model():
-	import os
+	import os, pathlib
+    
 	folderpath = os.path.abspath(os.getcwd())
 	model_folderpath = os.path.join(folderpath, 'model')
 	prediction_folderpath = os.path.join(folderpath)
 
-	modelname = 'Food_Classification_Gen10'                                           #Model Name to be loaded
+	modelname = 'Food_Classification_Gen25'                                           #Model Name to be loaded
 	model_path = os.path.join(model_folderpath, modelname+'.hdf5')                     #Model Path to be loaded
 	print(f"Model Path is: {model_path}")
 
@@ -374,25 +717,27 @@ def model():
 ###########################################################
 
 from io import BytesIO
+import gc
 from telegram.ext import Updater, CommandHandler, MessageHandler,Filters, InlineQueryHandler
 #from telegram.ext import Updater,MessageHandler,Filters
 from telegram.ext.dispatcher import run_async
 import time,threading,multiprocessing
 #from webhook_remover import webhook_remover
-TOKEN='1239312494:AAGXEt22xKY9pF3DEyHrfG4nUGBsS4CXoHk'
+TOKEN='1209854585:AAHC9A4awhi0lqjYnI7r_qkEyctq_p2xyAQ'
 ingredients=[]
 yummly=[]
 
-def YummlyToString(yummly):
+def YummlyToString(yummly,string):
     i=len(yummly)-1
     prev_y=''
     while i>-1:
         y=str(i+1)+'. '+yummly[i]+'\n'+prev_y
         prev_y=y
         i-=1
-        y=('Yummly suggestions:\n'+
+        y=('Yummly suggestions for '+string+':\n'+
             y+'\n'+'Pls confirm which recipe to pick?'
             +'\n'+'For eg, if want recipe 1, pls reply just "1".')
+    gc.collect()
     return y
 
 def IngredientsToString(ingredients):
@@ -410,6 +755,7 @@ def IngredientsToString(ingredients):
             +"\n\n***If ingredients list is correct and enough, pls reply 'done' once it is confirmed."+
             '\n***If ingredients list is not enough, pls continue to upload the photos'
            )
+    gc.collect()
     return y
 
 def Yummlymessage(yummly,update):
@@ -431,7 +777,7 @@ def yummlyTransfer(ingredients,update):
         print(yummly)
         if yummly!=[] and yummly[0]!='':
                 print(yummly)
-                y=YummlyToString(yummly)
+                y=YummlyToString(yummly,string)
                 print(y)
                 update.message.reply_text(y)
                 ingredients.clear()
@@ -444,7 +790,8 @@ def yummlyTransfer(ingredients,update):
             ingredients.remove(remove_ingredients)
             y,yummly,yum=yummlyTransfer(ingredients,update)
 
-                    
+        del string
+         
         return y,yummly,yum
 
 def delete(i,ingredient_num):
@@ -458,13 +805,18 @@ def delete(i,ingredient_num):
         return "ingredient is not added in , pls send ingredients photo here"
 
 def message(update,context):
+    #gc.enable()
+    gc.collect()
     global yummly,yum,y,ingredients,manual
 
     #below is the detect the integer from user, so that to match the recipe name
     if Yummlymessage(yummly,update)!=None:
-        details=getRecipe(yum,Yummlymessage(yummly,update))
+        update.message.reply_text('retrieving recipe!Please wait ah')
+        details,suggestion=getRecipe(yum,Yummlymessage(yummly,update))
         print(details)
+        print('we suggest you add '+suggestion+' to make it more tasty.')
         update.message.reply_text(details)
+        update.message.reply_text('we suggest you add '+suggestion+' to make it more tasty.')
     
     if update.message.text.upper().find('DEL')>-1:
         
@@ -480,6 +832,7 @@ def message(update,context):
             update.message.reply_text(ingredients_string)
         except Exception:
             pass
+        del ingredient_num,temp
 
     if update.message.text.upper().find('EDIT')>-1:
             manual=str(update.message.text)
@@ -493,30 +846,33 @@ def message(update,context):
             print(temp)
             update.message.reply_text(temp+' is removed')
             ingredients.remove(temp)
-            ingredients.append(second.lower().replace(' ',''))
-            print(ingredients)
+            temp=second.lower().replace(' ','')
+            if temp!='':
+                ingredients.append(temp)
+                print(ingredients)
             try:
                 ingredients_string=IngredientsToString(ingredients)
                 update.message.reply_text(ingredients_string)
             except Exception:
                 pass
+            del temp,first,second,ingredient_num
             
     if update.message.text.upper().find('ADD')>-1:
             temp=update.message.text.upper().replace('ADD','').replace(' ','')
-            ingredients.append(temp.lower())
+            if temp!='':
+                ingredients.append(temp.lower())
         
             try:
                 ingredients_string=IngredientsToString(ingredients)
                 update.message.reply_text(ingredients_string)
             except Exception:
                 pass    
+            del temp
     
     #Type 'to yummly' in telegram danielthx account
     #and it will activate yummly function
     if update.message.text.upper().find('DONE')>-1:
         update.message.reply_text('transfering to yummly')
-        if recipeList!=[]:
-            recipeList.clear()
         
         try:
             if ingredients!=[]:
@@ -533,6 +889,7 @@ def message(update,context):
                 update.message.reply_text(y)
             else:
                 pass
+            del temp
     try:
         if update.message.text.upper().find('RECIPE')>-1:
             print(y)
@@ -568,7 +925,8 @@ def write_bytesio_to_file(filename, bytesio):
         outfile.write(bytesio.getbuffer())
 
 def receive_image(update,context):
-
+    #gc.enable()
+    gc.collect()
     global ingredients,string
     try:
         update.message.reply_text("wait ah, it's still downloading")
@@ -576,30 +934,42 @@ def receive_image(update,context):
         obj=context.bot.getFile(file_id=update.message.photo[-1].file_id)
         f =  BytesIO(obj.download_as_bytearray())
         write_bytesio_to_file('telegram_image.jpg', f)
+        
+        label=model().lower()
+        print(label)
+        if label!='none':
+            
+            if label not in ingredients:
+                ingredients.append(label)
+            string=convert_list_to_string(ingredients,',')
+            print(ingredients)
 
-        google_label=model().lower()
-        print(google_label)
-        if google_label not in ingredients:
-            ingredients.append(google_label)
-        string=convert_list_to_string(ingredients,',')
-        print(ingredients)
 
-
-        update.message.reply_text(string+
+            update.message.reply_text(string+
                                   " are in ingredients list.\n"+
                                   "If want to add in more ingredient , pls upload the photo.\n"
                                   )
-        ingredients_string=IngredientsToString(ingredients)
-        update.message.reply_text(ingredients_string)
+            ingredients_string=IngredientsToString(ingredients)
+            update.message.reply_text(ingredients_string)
+            del f,obj,label
+        else:
+            update.message.reply_text("Pls retake the photo again")
+
 
     except Exception as e:
         print(str(e))
         receive_image(update,context)  
 
+def command_handling_fn(update,context):
+    update.message.reply_text('Welcome to CookWhatAh')
+    update.message.reply_text("you can start upload your photos or press 'help' to guide through this bot")
 
 def telegramBot(TOKEN):
+    #gc.enable()
+    gc.collect()
     updater=Updater(token=TOKEN,use_context=True)
     dp=updater.dispatcher
+    dp.add_handler(CommandHandler('start',command_handling_fn))
     dp.add_handler(MessageHandler(Filters.text,message))
     dp.add_handler(MessageHandler(Filters.photo,receive_image))
     updater.start_polling()
