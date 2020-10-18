@@ -1,7 +1,7 @@
 # req_recipe scrapes links from website's search function and scraps out recipe details from recipe websites
 # Yummly seem to have a max of 500 recipes per search
 
-import requests,concurrent.futures,bs4,re,time,os,sys
+import requests,concurrent.futures,bs4,re,time,os,sys,copy
 
 dir_main = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(dir_main, "ProjectModel_Ingredients"))
@@ -29,16 +29,21 @@ class Yummly:
             'Access-Control-Max-Age': '3600',
             'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
             }
-        self.top10Recipes = self._getRecipeList(10)
+        self.top10Recipes = self._getRecipeList(10)[:10]
         self.top10RecipeURLs = self._getRecipeURLList(self.top10Recipes)
         self.top10RecipesName = self._getRecipeNameList(self.top10Recipes)
 
         self.selectedRecipeName = ""
-        self.recommendedIngred = ""
+        self.recommendedIngred = []
 
         self.LABEL_ENCODER = "label_encoder.pkl"
         self.ONEHOT_ENCODER = "onehot_encoder.pkl"
         self.MODEL_PATH = os.path.join(dir_main, "ProjectModel_Ingredients", "codefull.hdf5")
+
+        self.mapIng = MapIngred.MapIngred()
+        self.encoder = OHEIngred.OneHotEncodeIngred(label_encoder = self.LABEL_ENCODER, onehot_encoder = self.ONEHOT_ENCODER)
+        self.predictor = IngrePredict.IngrePredict(model_path = self.MODEL_PATH)
+
 
     ############################## THIS SECTION IS FOR RETRIEVING RECIPE URLS FROM SEARCH ###################################################
     # This function is to generate the scraping URL based on the input ingredients and returning to the request function to scrap information
@@ -204,28 +209,50 @@ class Yummly:
         else:
             return amount + " " + unit + " of " + ingredient
 
+    # Checks whether ingredient exists in recipe and addtional ingredient list
+    def _checkDuplicateIngred(self, recipe, ingred):
+        print([d["Ingredient"] for d in recipe["Ingredients"]])
+        if ingred in [d["Ingredient"] for d in recipe["Ingredients"]]: return True
+        return False
+
+    # Combines the additional ingredients into the recipe with dummy amount and unit
+    def _combineAddIngred(self, recipe):
+        for item in self.recommendedIngred:
+            ingred_temp = {}
+            ingred_temp["Ingredient"] = item
+            ingred_temp["Amount"] = ""
+            ingred_temp["Unit"] = ""
+            recipe["Ingredients"].append(ingred_temp)
+        return recipe["Ingredients"]
+
     # Runs prediction model to predict the additional ingredient to recommend
     def _recommendIngred(self):
-        mapIng = MapIngred.MapIngred()
-        encoder = OHEIngred.OneHotEncodeIngred(label_encoder = self.LABEL_ENCODER, onehot_encoder = self.ONEHOT_ENCODER)
-        predictor = IngrePredict.IngrePredict(model_path = self.MODEL_PATH)
-
-        recipeList = self.top10Recipes
+        recipeList = copy.deepcopy(self.top10Recipes)
         recipeName = self.selectedRecipeName
 
         for recipe in recipeList:
             if recipe["Name"] == recipeName:
+
                 print("Mapping ingredients into broader categories for prediction...")
-                recipe["Ingredients"] = mapIng._mapRecipeIngred(recipe)
+                recipe["Ingredients"] = self.mapIng._mapRecipeIngred(recipe)
+                recipe["Ingredients"] = self._combineAddIngred(recipe)
+
                 print("Converting ingredient list to one hot encoded vector...")
-                recipeIngred_encode = encoder._encodeRecipe(recipe)
+                recipeIngred_encode = self.encoder._encodeRecipe(recipe)
+
                 print("Prediction ongoing...")
-                predicted_class = predictor._predict_inputs(inputs = recipeIngred_encode)[0]
+                predicted_class = self.predictor._predict_inputs(inputs = recipeIngred_encode)[0]
+
                 print("Mapping prediction to ingredient class...")
-                recommendIngred = encoder._decodeIngred(predicted_class)
+                recommendIngred = self.encoder._decodeIngred(predicted_class)
+
                 print("Predicted ingredient: " + recommendIngred)
+
+                if self._checkDuplicateIngred(recipe, recommendIngred):
+                    print("Ingredient already present. Will not add to list")
+                else:
+                    self.recommendedIngred.append(recommendIngred)
                 break
-        self.recommendedIngred = recommendIngred
 
     # Extract and form text of ingredients and instructions link based on input recipe name
     # Includes the running of the prediction function to generate the additional ingredient
@@ -243,17 +270,17 @@ class Yummly:
                 text = text + "\nCooking Instructions: " + recipe["Link"]
 
                 self.selectedRecipeName = recipeName
-                self._recommendIngred()
                 return text
         return "Unable to find recipe name."
 
     # Returns the recommended additional ingredient to be added
     def _getRecommendedIngred(self):
+        self._recommendIngred()
         return self.recommendedIngred
 
 
 if __name__ == '__main__':
-    ingredients = ["Banana", "Chicken",'Potato']
+    ingredients = ["Banana","Chicken",'Potato']
     # cuisine = ""
     # cuisine = "american"
     yum = Yummly(ingredients)
