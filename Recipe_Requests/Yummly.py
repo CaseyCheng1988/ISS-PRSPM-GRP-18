@@ -211,7 +211,7 @@ class Yummly:
 
     # Checks whether ingredient exists in recipe and addtional ingredient list
     def _checkDuplicateIngred(self, recipe, ingred):
-        print([d["Ingredient"] for d in recipe["Ingredients"]])
+        # print([d["Ingredient"] for d in recipe["Ingredients"]])
         if ingred in [d["Ingredient"] for d in recipe["Ingredients"]]: return True
         return False
 
@@ -275,7 +275,6 @@ class Yummly:
 
     # Returns the recommended additional ingredient to be added
     def _getRecommendedIngred(self):
-        self._recommendIngred()
         return self.recommendedIngred
 
 
@@ -302,5 +301,8 @@ if __name__ == '__main__':
     finish=time.perf_counter()
     chosenRecipe = input("Please choose recipe from above list: ")
     print(yum._getRecipeText(chosenRecipe))
-    print(yum._getRecommendedIngred())
+    yum._recommendIngred()
+    print(yum.recommendedIngred)
+    yum._recommendIngred()
+    print(yum.recommendedIngred)
     print(f'Finished in {round(finish-start,2)}second(s)')
