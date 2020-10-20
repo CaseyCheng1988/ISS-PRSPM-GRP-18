@@ -810,13 +810,13 @@ def IngredientsToString(ingredients):
 
 def SuggestionToString(Suggestion):
     i=len(Suggestion)-1
-    prev_x=''
-    x=''
+    prev_sugstring=''
+    sugstring=''
     while i>-1:
-        x='\n-'+Suggestion[i]+prev_x
+        sugstring='\n-'+Suggestion[i]+prev_sugstring
         i-=1
-        prev_x=x
-    return 'CookWhatAh recommends adding the following ingredients to spice things up:'+x
+        prev_sugstring=sugstring
+    return 'CookWhatAh recommends adding the following ingredients to spice things up:'+sugstring
 
 def Yummlymessage(yummly,update):
     try:
