@@ -12,7 +12,7 @@ Yummly.py consists of the main class that runs the core of the functions after r
 
 ## Preparing Data Set for Ingredient Recommender Neural Network
 Flow to prepare the dataset used for training the neural network:
-1) Scrap recipes containing the 25 ingredients from Yummly, and filtering out recipes rated 3.5 stars and above (Total 6700+ recipes)
+1) Scrap recipes containing the 25 ingredients from Yummly, and filtering out recipes rated 3.5 stars and above (Total 6700+ recipes -> recipes_rated.json)
     1) yummly_db_build.py - main query script to run in parallel with multiple filters
     2) combine_recipes.py - combine multiple queries into a single big recipe list
     3) remove_dup_recipes.py - remove duplicate recipes that were queried
