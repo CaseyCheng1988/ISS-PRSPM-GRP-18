@@ -1098,6 +1098,7 @@ def receive_image(update,context):
             update.message.reply_text(ingredients_string)
             del f,obj,label
         else:
+            count2.clear()
             update.message.reply_text("Pls retake the photo again")
             update.message.bot.send_photo(update.message.chat.id,open('Photo_Standard.jpg','rb'))
 
