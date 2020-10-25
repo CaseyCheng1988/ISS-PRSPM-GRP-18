@@ -285,9 +285,9 @@ start=time.perf_counter()
 recipeList = []
 folderpath = os.path.abspath(os.getcwd())
 model_folderpath = os.path.join(folderpath, 'ProjectModel_Ingredients')
-modelname = 'codefull' 
+modelname = 'codefull'
 class Yummly:
-    
+
     # Yummly class by default will initiate a top 10 relevant search and pull from Yummly
     # This information can be called from top10Recipes list
     def __init__(self, ingredients, cuisine=""):
@@ -311,7 +311,7 @@ class Yummly:
 
         self.LABEL_ENCODER = "label_encoder.pkl"
         self.ONEHOT_ENCODER = "onehot_encoder.pkl"
-        self.MODEL_PATH = os.path.join(model_folderpath, modelname+'.hdf5') 
+        self.MODEL_PATH = os.path.join(model_folderpath, modelname+'.hdf5')
 
         self.mapIng = MapIngred()
         self.encoder = OneHotEncodeIngred(label_encoder = self.LABEL_ENCODER, onehot_encoder = self.ONEHOT_ENCODER)
@@ -547,7 +547,7 @@ class Yummly:
     # Extract and form text of ingredients and instructions link based on input recipe name
     # Includes the running of the prediction function to generate the additional ingredient
     def _getRecipeText(self, recipeName, recipeList = []):
-        
+        self._clearRecommenededIngred()
         if len(recipeList) == 0: recipeList = self.top10Recipes
         text = ""
         for recipe in recipeList:
@@ -571,6 +571,9 @@ class Yummly:
         gc.collect()
         return self.recommendedIngred
 
+    # Clearing of additional ingredient list
+    def _clearRecommenededIngred(self):
+        self.recommendedIngred.clear()
 
 def main(ingredients):
     gc.collect()
@@ -580,7 +583,7 @@ def main(ingredients):
     #ingredients = ["beef"]
     # cuisine = ""
     # cuisine = "american"
-    
+
     yum = Yummly(ingredients)
     # recipes = yum._getRecipeList(500)
     recipes = yum.top10Recipes
@@ -596,7 +599,7 @@ def main(ingredients):
     print("Number of URLs found from Yummly: " + str(len(recipes)))
     return yum.top10RecipesName,yum
 
-    
+
 def getRecipe(yum,chosenRecipe):
     details=yum._getRecipeText(chosenRecipe)
     Suggestion,warning=getRecommend(yum)
@@ -607,11 +610,11 @@ def getRecommend(yum):
     warning=yum._recommendIngred()
     gc.collect()
     return yum.recommendedIngred,warning
-  
+
 ###########################################################
 #MODEL FUNCTION
-###########################################################  
-  
+###########################################################
+
 import numpy as np
 import gc
 from tensorflow.keras.preprocessing.image import load_img
@@ -639,7 +642,7 @@ class Prediction_Model:
 			 "NONE" 	  : 'None'}
 
 	CLASS_LABELS = 	{0 : 'Apple',
-					 1 : 'Avocado', 
+					 1 : 'Avocado',
 					 2 : 'Banana',
 					 3 : 'BeanSprout',
 					 4 : 'Beef',
@@ -674,10 +677,10 @@ class Prediction_Model:
 		Prediction_Model.model_path = model_path
 
 	def createModel():
-	    
+
 	    xin = Input(shape=(256,256,3))
 	    x = Rescaling(1./255) (xin)
-	    
+
 	    x = Conv2D(64,(3,3),activation=None, padding='same')(x)
 	    x = Activation('relu') (x)
 
@@ -685,19 +688,19 @@ class Prediction_Model:
 	    x = Conv2D(32,(3,3),activation=None, padding='same')(x)
 	    x = BatchNormalization() (x)
 	    x = Activation('relu') (x)
-	    
+
 	    x = MaxPooling2D(pool_size=(2,2)) (x)
-	    x = Conv2D(32,(3,3),activation=None, padding='same')(x)    
+	    x = Conv2D(32,(3,3),activation=None, padding='same')(x)
 	    x = Activation('relu') (x)
 
 	    x = MaxPooling2D(pool_size=(2,2)) (x)
 	    x = Conv2D(64,(3,3),activation=None, padding='same', kernel_regularizer=regularizers.l2(0.001))(x)
-	    x = BatchNormalization() (x)   
+	    x = BatchNormalization() (x)
 	    x = Activation('relu') (x)
-	    
+
 	    x = MaxPooling2D(pool_size=(2,2)) (x)
-	    x = Conv2D(128,(3,3),activation=None, padding='same', kernel_regularizer=regularizers.l2(0.001))(x)    
-	    x = BatchNormalization() (x)       
+	    x = Conv2D(128,(3,3),activation=None, padding='same', kernel_regularizer=regularizers.l2(0.001))(x)
+	    x = BatchNormalization() (x)
 	    x = Activation('relu') (x)
 
 	    x = MaxPooling2D(pool_size=(2,2)) (x)
@@ -708,23 +711,23 @@ class Prediction_Model:
 
 
 	    pred_model = Model(inputs=xin,outputs=x)
-	    pred_model.compile(loss='categorical_crossentropy', 
-	                  optimizer=Prediction_Model.optmz, 
+	    pred_model.compile(loss='categorical_crossentropy',
+	                  optimizer=Prediction_Model.optmz,
 	                  metrics=['categorical_accuracy'])
 
 	    return pred_model
 
 
 	def predict_image(self, image_path):
-	    
+
 	    PIL_img = load_img(
 	        image_path,
 	        color_mode = 'rgb',
 	        target_size = (Prediction_Model.CONST['IMG_HEIGHT'], Prediction_Model.CONST['IMG_WIDTH']))
-	    
+
 	    ARR_img = img_to_array(PIL_img)
 	    ARR_img = np.expand_dims(ARR_img, axis=0)
-	    
+
 	    Prediction_Model.pred_model.load_weights(Prediction_Model.model_path)
 	    Prediction_Model.pred_model.compile(loss='categorical_crossentropy',
 	        optimizer=Prediction_Model.optmz,
@@ -744,7 +747,7 @@ class Prediction_Model:
 
 def model():
 	import os, pathlib
-    
+
 	folderpath = os.path.abspath(os.getcwd())
 	model_folderpath = os.path.join(folderpath, 'model')
 	prediction_folderpath = os.path.join(folderpath)
@@ -760,13 +763,13 @@ def model():
 
 	#Step 1: Initalise Prediction_Model Class with model_path
 	Pred_Model = Prediction_Model(model_path)
-    
-	#Step 2: predict_image by passing in image_path of the image
-    
-	return Pred_Model.predict_image(image_path)
-     
 
-    
+	#Step 2: predict_image by passing in image_path of the image
+
+	return Pred_Model.predict_image(image_path)
+
+
+
 ###########################################################
 #TELEGRAM FUNCTION
 ###########################################################
@@ -803,7 +806,7 @@ def IngredientsToString(ingredients):
         i-=1
         y=("ingredients list:\n"+
             y+"\nIn case this ingredient is wrong, pls type the command along with the respective ingredients list number."+
-            "\n\n*Like for eg,if ingredients number 1 is wrong, just type 'del 1' to delete number 1 ingredient"+ 
+            "\n\n*Like for eg,if ingredients number 1 is wrong, just type 'del 1' to delete number 1 ingredient"+
             "\n*Like for eg, if ingredients number 1 is wrong want to swap it with banana, just type 'edit 1,banana' to swap the respective ingredients"+
             "\n*If manual input is needed, like for eg; want to add in banana, just press 'add banana' "
             +"\n\n***If ingredients list is correct and enough, pls reply 'done' once it is confirmed."+
@@ -813,6 +816,8 @@ def IngredientsToString(ingredients):
     return y
 
 def SuggestionToString(Suggestion):
+    if len(Suggestion) == 0:
+        return ''
     i=len(Suggestion)-1
     prev_sugstring=''
     sugstring=''
@@ -822,8 +827,8 @@ def SuggestionToString(Suggestion):
         prev_sugstring=sugstring
     gc.collect()
     return ('CookWhatAh recommends adding the following ingredients to spice things up:'+sugstring
-            
-            
+
+
             )
 
 def Yummlymessage(yummly,update):
@@ -855,7 +860,7 @@ def yummlyTransfer(ingredients,update):
         elif yummly==[] or yummly[0]=='':
             update.message.reply_text("don't have such combination/recipe for "+string)
             remove_ingredients=ingredients[len(ingredients)-1]
-            
+
             update.message.reply_text('due to invalid combination,'+remove_ingredients+' is removed.')
             ingredients.remove(remove_ingredients)
             y,yummly,yum=yummlyTransfer(ingredients,update)
@@ -878,12 +883,12 @@ def delete(i,ingredient_num):
 
 def message(update,context):
     #gc.enable()
-    
-    global yummly,yum,y,ingredients,manual,suggestion,RecipeName,sug_string,z,x       
-    
+
+    global yummly,yum,y,ingredients,manual,suggestion,RecipeName,sug_string,z,x
+
     if update.message.text.upper().find('EXTEND')>-1 and len(z)>0:
         #print(getRecommend(yum))
-        
+
         update.message.reply_text('Pls wait ah!, we will suggest more to you shortly')
         user=update.message.text.lower().replace('extend','')
         try:
@@ -900,25 +905,25 @@ def message(update,context):
                 update.message.reply_text('you have added '+manual_ingred)
         Suggestion,warning=getRecommend(yum)
         print(Suggestion)
-        
+
         suggestion=SuggestionToString(Suggestion)
         if len(count)==5:
             suggestion=(suggestion+"\n\n*pls reply 'extend' is to extend the suggestion further from ingredient suggestor"
-                    +"\n*if you want to add ingredients manually in the ingredients model, pls type like for eg,'extend banana'") 
+                    +"\n*if you want to add ingredients manually in the ingredients model, pls type like for eg,'extend banana'")
             count.clear()
-            
+
         print(suggestion)
         count.append('1')#counter for comment 'pls reply extend'
-        update.message.reply_text(suggestion)
+        if suggestion != '': update.message.reply_text(suggestion)
         if warning!='':
                 update.message.reply_text(warning)
         requestSuggestion.clear()
 
-        
-            
+
+
     elif update.message.text.upper().find('EXTEND')>-1 and len(z)==0:
         update.message.reply_text('what to extend ah! invalid command')
-        
+
     #below is the detect the integer from user, so that to match the recipe name
     if Yummlymessage(yummly,update)!=None:
         count.clear()
@@ -932,13 +937,16 @@ def message(update,context):
         suggestion=SuggestionToString(Suggestion)
         suggestion=(suggestion+"\n\n*pls reply 'extend' is to extend the suggestion further from ingredient suggestor"
                     +"\n*if you want to add ingredients manually in the ingredients model, pls type like for eg,'extend banana'")
-        
+
         print(suggestion)
         update.message.reply_text(details)
-        update.message.reply_text(suggestion)
-        count.append('1')
+        if warning != '':
+            update.message.reply_text(warning)
+        else:
+            update.message.reply_text(suggestion)
+            count.append('1')
         #update.message.reply_text('we suggest you add '+suggestion+' to make it more tasty.')
-    
+
     if update.message.text.upper().find('DEL')>-1:
         z.clear()
         ingredient_num=int(update.message.text.upper().replace('DEL',''))
@@ -963,7 +971,7 @@ def message(update,context):
             second=manual.split(',')[1]
             ingredient_num=int(first.upper().replace('EDIT',''))
             print(manual)
-            
+
             print(ingredient_num)
             temp=delete(0,ingredient_num)
             print(temp)
@@ -979,30 +987,30 @@ def message(update,context):
             except Exception:
                 pass
             del temp,first,second,ingredient_num
-            
+
     if update.message.text.upper().find('ADD')>-1:
             z.clear()
             temp=update.message.text.upper().replace('ADD','').replace(' ','')
             if temp!='':
                 ingredients.append(temp.lower())
-        
+
             try:
                 ingredients_string=IngredientsToString(ingredients)
                 update.message.reply_text(ingredients_string)
             except Exception:
-                pass    
+                pass
             del temp
-    
+
     #Type 'to yummly' in telegram danielthx account
     #and it will activate yummly function
     if update.message.text.upper().find('DONE')>-1:
         z.clear()
         update.message.reply_text('transfering to yummly')
-        
+
         try:
             if ingredients!=[]:
                 y,yummly,yum=yummlyTransfer(ingredients,update)
-            
+
             elif y.find('Yummly suggestions')>-1:
                 temp="ingredients has been transferred to yummly, now pls type 'recipe'."
                 print(temp)
@@ -1023,7 +1031,7 @@ def message(update,context):
         print('no recipe yet')
         update.message.reply_text('no recipe yet')
 
-    
+
     if update.message.text.upper().find('HELP')>-1:
         instruction=("*reply 'recipe' is to get show all the suggested top 10 recipes from Yummly"+
               "\n*reply 'done' is to retrieve the recipes from yummly"+
@@ -1032,7 +1040,7 @@ def message(update,context):
               "\n*reply for eg 'del 1' will just delete the ingredients item number 1 in ingredients list"
               "\n*pls reply 'extend' is to extend the suggestion further from ingredient suggestor"
               "\n*if you want to add ingredients manually in the ingredients model, pls type like for eg,'extend banana'"
-              )    
+              )
         print(instruction)
         update.message.reply_text(instruction)
         update.message.bot.send_photo(update.message.chat.id,open('Photo_Standard.jpg','rb'))
@@ -1064,21 +1072,21 @@ def receive_image(update,context):
         obj=context.bot.getFile(file_id=update.message.photo[-1].file_id)
         f =  BytesIO(obj.download_as_bytearray())
         write_bytesio_to_file('telegram_image.jpg', f)
-        
+
         label=model().lower()
         print(label)
         if label!='none':
-            
+
             if label not in ingredients:
                 ingredients.append(label)
             string=convert_list_to_string(ingredients,',')
             print(ingredients)
 
 
-            update.message.reply_text(string+
-                                  " are in ingredients list.\n"+
-                                  "If want to add in more ingredient , pls upload the photo.\n"
-                                  )
+            # update.message.reply_text(string+
+            #                       " are in ingredients list.\n"+
+            #                       "If want to add in more ingredient , pls upload the photo.\n"
+            #                       )
             ingredients_string=IngredientsToString(ingredients)
             update.message.reply_text(ingredients_string)
             del f,obj,label
@@ -1089,8 +1097,8 @@ def receive_image(update,context):
 
     except Exception as e:
         print(str(e))
-        receive_image(update,context)  
-    
+        receive_image(update,context)
+
 
 def command_handling_fn(update,context):
     update.message.reply_text('Welcome to CookWhatAh')
@@ -1110,5 +1118,3 @@ def telegramBot(TOKEN):
 
 
 telegramBot(TOKEN)
-
-
