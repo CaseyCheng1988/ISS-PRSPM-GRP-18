@@ -133,7 +133,7 @@ if __name__ == "__main__":
 	import os, pathlib
 	folderpath = os.path.abspath(os.getcwd())
 	model_folderpath = os.path.join(folderpath, 'model')
-	prediction_folderpath = os.path.join(folderpath, 'pred_to_be_made')
+	prediction_folderpath = os.path.join(folderpath, 'sample_images')
 
 	modelname = 'Food_Classification_Gen25'                                           	#Model Name to be loaded
 	model_path = os.path.join(model_folderpath, modelname+'.hdf5')                     	#Model Path to be loaded
