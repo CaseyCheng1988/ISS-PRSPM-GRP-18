@@ -8,6 +8,7 @@ requestSuggestion=[]
 Suggestion=[]
 z=[]
 count=[]
+count2=[]
 class MapIngred:
 
     def __init__(self):
@@ -781,6 +782,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler,Filters, Inline
 import time
 #from webhook_remover import webhook_remover
 TOKEN='1209854585:AAHC9A4awhi0lqjYnI7r_qkEyctq_p2xyAQ'
+# TOKEN='1191987017:AAFoH1SGpTXABUcs9O1H4rpjUdCGjuYUBOM'
 ingredients=[]
 yummly=[]
 
@@ -798,20 +800,25 @@ def YummlyToString(yummly,string):
     return y
 
 def IngredientsToString(ingredients):
+    global count
     i=len(ingredients)-1
     prev_y=''
     while i>-1:
         y=str(i+1)+'. '+ingredients[i]+'\n'+prev_y
         prev_y=y
         i-=1
-        y=("ingredients list:\n"+
-            y+"\nIn case this ingredient is wrong, pls type the command along with the respective ingredients list number."+
-            "\n\n*Like for eg,if ingredients number 1 is wrong, just type 'del 1' to delete number 1 ingredient"+
-            "\n*Like for eg, if ingredients number 1 is wrong want to swap it with banana, just type 'edit 1,banana' to swap the respective ingredients"+
-            "\n*If manual input is needed, like for eg; want to add in banana, just press 'add banana' "
-            +"\n\n***If ingredients list is correct and enough, pls reply 'done' once it is confirmed."+
-            '\n***If ingredients list is not enough, pls continue to upload the photos'
-           )
+    y=("Ingredients list:\n"+y)
+    if len(count) == 4:
+        y = (y+"\nOk but ah, if got problem with the list, type command followed by respective ingredients list number."+
+        "\n\n*To delete ingredient: Reply for eg, 'del 1' to delete #1 ingredient."+
+        "\n*To edit ingredient: Reply for eg, 'edit 1,banana' to edit ingredient #1 to change to banana."+
+        "\n*If want to manually input: Reply for eg, 'add banana' to add banana into the list. "
+        +"\n\n***If ingredients list is correct and enough, pls reply 'done'."+
+        '\n***If ingredients list is not enough, pls continue to upload more photos.'
+        )
+        count.clear()
+    else:
+        count.append('1')
     gc.collect()
     return y
 
@@ -858,10 +865,10 @@ def yummlyTransfer(ingredients,update):
                 ingredients.clear()
 
         elif yummly==[] or yummly[0]=='':
-            update.message.reply_text("don't have such combination/recipe for "+string)
+            update.message.reply_text("Cannot find recipe that uses "+string+".")
             remove_ingredients=ingredients[len(ingredients)-1]
 
-            update.message.reply_text('due to invalid combination,'+remove_ingredients+' is removed.')
+            update.message.reply_text('Due to invalid search results,'+remove_ingredients+' is removed.')
             ingredients.remove(remove_ingredients)
             y,yummly,yum=yummlyTransfer(ingredients,update)
 
@@ -879,7 +886,7 @@ def delete(i,ingredient_num):
             delete(i,ingredient_num)
     elif y.find('Yummly suggestions')==-1:
         gc.collect()
-        return "ingredient is not added in , pls send ingredients photo here"
+        return "Ingredient is not added in , pls send ingredients photo here."
 
 def message(update,context):
     #gc.enable()
@@ -889,7 +896,7 @@ def message(update,context):
     if update.message.text.upper().find('EXTEND')>-1 and len(z)>0:
         #print(getRecommend(yum))
 
-        update.message.reply_text('Pls wait ah!, we will suggest more to you shortly')
+        update.message.reply_text('Pls wait ah! We will suggest more to you shortly!')
         user=update.message.text.lower().replace('extend','')
         try:
             if user[0]==' ':
@@ -902,18 +909,18 @@ def message(update,context):
         manual_ingred=convert_list_to_string(requestSuggestion,',')
         if manual_ingred!='':
                 print('you have added '+manual_ingred)
-                update.message.reply_text('you have added '+manual_ingred)
+                update.message.reply_text('You have added '+manual_ingred+'.')
         Suggestion,warning=getRecommend(yum)
         print(Suggestion)
 
         suggestion=SuggestionToString(Suggestion)
-        if len(count)==5:
-            suggestion=(suggestion+"\n\n*pls reply 'extend' is to extend the suggestion further from ingredient suggestor"
-                    +"\n*if you want to add ingredients manually in the ingredients model, pls type like for eg,'extend banana'")
-            count.clear()
+        if len(count2)==5:
+            suggestion=(suggestion+"\n\n*You can reply 'extend' to make us recommend another ingredient."
+                    +"\n*If you want to add ingredients manually in the ingredients model, pls add the ingredient behind. For eg,'extend banana'")
+            count2.clear()
 
         print(suggestion)
-        count.append('1')#counter for comment 'pls reply extend'
+        count2.append('1')#counter for comment 'pls reply extend'
         if suggestion != '': update.message.reply_text(suggestion)
         if warning!='':
                 update.message.reply_text(warning)
@@ -922,21 +929,22 @@ def message(update,context):
 
 
     elif update.message.text.upper().find('EXTEND')>-1 and len(z)==0:
-        update.message.reply_text('what to extend ah! invalid command')
+        update.message.reply_text('What to extend ah! Invalid command!')
 
     #below is the detect the integer from user, so that to match the recipe name
     if Yummlymessage(yummly,update)!=None:
         count.clear()
+        count2.clear()
         if z==[]:
             z.append('1')
-        update.message.reply_text('retrieving recipe!Please wait ah')
+        update.message.reply_text('Retrieving recipe! Please wait ah.')
         RecipeName=Yummlymessage(yummly,update)
         details,Suggestion,warning=getRecipe(yum,RecipeName)
         print(details)
         print(Suggestion)
         suggestion=SuggestionToString(Suggestion)
-        suggestion=(suggestion+"\n\n*pls reply 'extend' is to extend the suggestion further from ingredient suggestor"
-                    +"\n*if you want to add ingredients manually in the ingredients model, pls type like for eg,'extend banana'")
+        suggestion=(suggestion+"\n\n*You can reply 'extend' to make us recommend another ingredient."
+                    +"\n*If you want to add ingredients manually in the ingredients model, pls add the ingredient behind. For eg,'extend banana'")
 
         print(suggestion)
         update.message.reply_text(details)
@@ -944,7 +952,7 @@ def message(update,context):
             update.message.reply_text(warning)
         else:
             update.message.reply_text(suggestion)
-            count.append('1')
+            count2.append('1')
         #update.message.reply_text('we suggest you add '+suggestion+' to make it more tasty.')
 
     if update.message.text.upper().find('DEL')>-1:
@@ -1012,12 +1020,12 @@ def message(update,context):
                 y,yummly,yum=yummlyTransfer(ingredients,update)
 
             elif y.find('Yummly suggestions')>-1:
-                temp="ingredients has been transferred to yummly, now pls type 'recipe'."
+                temp="Ingredients have been transferred to yummly, now pls type 'recipe'."
                 print(temp)
                 update.message.reply_text(temp)
         except Exception:
             if ingredients==[]:
-                y="ingredient is not added in , pls send ingredients photo here"
+                y="Ingredient was not added in , pls send ingredients photo here"
                 print(y)
                 update.message.reply_text(y)
             else:
@@ -1033,13 +1041,13 @@ def message(update,context):
 
 
     if update.message.text.upper().find('HELP')>-1:
-        instruction=("*reply 'recipe' is to get show all the suggested top 10 recipes from Yummly"+
-              "\n*reply 'done' is to retrieve the recipes from yummly"+
-              "\n*reply for eg 'edit 1,banana' will swap the ingredients item number 1 with banana"+
-              "\n*reply for eg 'add banana' will just add the ingredients list with banana"+
-              "\n*reply for eg 'del 1' will just delete the ingredients item number 1 in ingredients list"
-              "\n*pls reply 'extend' is to extend the suggestion further from ingredient suggestor"
-              "\n*if you want to add ingredients manually in the ingredients model, pls type like for eg,'extend banana'"
+        instruction=("*Reply 'recipe' to show top 10 recipes from Yummly."+
+              "\n*Reply 'done' to retrieve the recipes from yummly"+
+              "\n*Reply for eg 'edit 1,banana' will swap the ingredients item number 1 with banana"+
+              "\n*Reply for eg 'add banana' will just add the ingredients list with banana"+
+              "\n*Reply for eg 'del 1' will just delete the ingredients item number 1 in ingredients list"
+              "\n*Pls reply 'extend' is to extend the suggestion further from ingredient suggestor"
+              "\n*If you want to add ingredients manually in the ingredients model, pls type like for eg,'extend banana'"
               )
         print(instruction)
         update.message.reply_text(instruction)
@@ -1067,7 +1075,7 @@ def receive_image(update,context):
     gc.collect()
     global ingredients,string
     try:
-        update.message.reply_text("wait ah, it's still downloading")
+        update.message.reply_text("Wait ah, it's still downloading.")
         recipeList.clear()
         obj=context.bot.getFile(file_id=update.message.photo[-1].file_id)
         f =  BytesIO(obj.download_as_bytearray())
@@ -1101,9 +1109,12 @@ def receive_image(update,context):
 
 
 def command_handling_fn(update,context):
+    global count
     update.message.reply_text('Welcome to CookWhatAh')
-    update.message.reply_text("you can start upload your photos or press 'help' to guide through this bot")
+    update.message.reply_text("You can start upload your photos or press 'help' to guide through this bot")
     update.message.bot.send_photo(update.message.chat.id,open('Photo_Standard.jpg','rb'))
+    count.clear()
+    for i in range(4): count.append('1')
 
 def telegramBot(TOKEN):
     #gc.enable()
