@@ -891,7 +891,7 @@ def delete(i,ingredient_num):
 def message(update,context):
     #gc.enable()
 
-    global yummly,yum,y,ingredients,manual,suggestion,RecipeName,sug_string,z,x
+    global yummly,yum,y,ingredients,manual,suggestion,RecipeName,sug_string,z,x,count
 
     if update.message.text.upper().find('EXTEND')>-1 and len(z)>0:
         #print(getRecommend(yum))
@@ -1013,7 +1013,7 @@ def message(update,context):
     #and it will activate yummly function
     if update.message.text.upper().find('DONE')>-1:
         z.clear()
-        update.message.reply_text('transfering to yummly')
+        update.message.reply_text('Searching for recipes.. Wait ah!')
 
         try:
             if ingredients!=[]:
@@ -1023,6 +1023,8 @@ def message(update,context):
                 temp="Ingredients have been transferred to yummly, now pls type 'recipe'."
                 print(temp)
                 update.message.reply_text(temp)
+            count.clear()
+            for i in range(4): count.append('1')
         except Exception:
             if ingredients==[]:
                 y="Ingredient was not added in , pls send ingredients photo here"
