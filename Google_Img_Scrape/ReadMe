@@ -1,4 +1,6 @@
-The Scrape code is based on selenium xpath, if Google changes its xpath the code won't work. Please take note
+The Scrape code is based on selenium xpath, if Google changes its xpath the code won't work, to make it work, pls change the xpath accordingly.
+Please take note the version of your google chrome browser, the uploaded chromedriver.exe is based on google chrome browser version Version 86.0.4240.75. 
+In case, the chromedriver.exe doesn't work, pls download the chromedriver.exe from https://chromedriver.chromium.org/downloads based on your chrome driver version.
 
 In line 28,excelInputPath pls mount the folder accordingly
 In line 29,chromedriverPath pls mount the folder accordingly
