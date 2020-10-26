@@ -1,1 +1,6 @@
+The Scrape code is based on selenium xpath, if Google changes its xpath the code won't work. Please take note
+
+In line 28,excelInputPath pls mount the folder accordingly
+In line 29,chromedriverPath pls mount the folder accordingly
+
 
